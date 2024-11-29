@@ -24,28 +24,36 @@ public class AuthenticationService {
     @Transactional
     public TokenResponse signUp(SignUpRequest request) {
 
-        var user = User.builder()
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.USER)
-                .build();
+        try {
+            var user = User.builder()
+                    .email(request.getEmail())
+                    .password(passwordEncoder.encode(request.getPassword()))
+                    .role(Role.USER)
+                    .build();
 
-        userService.create(user);
+            userService.create(user);
 
-        var jwt = jwtService.generateToken(user);
-        return new TokenResponse(jwt, "");
+            var jwt = jwtService.generateToken(user);
+            return new TokenResponse(jwt, "");
+        }catch (Exception e){
+            return new TokenResponse("", e.getMessage());
+        }
     }
 
     public TokenResponse signIn(SignInRequest request) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                request.getEmail(),
-                request.getPassword()
-        ));
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                    request.getEmail(),
+                    request.getPassword()
+            ));
 
-        var user = userService.userDetailsService()
-                .loadUserByUsername(request.getEmail());
+            var user = userService.userDetailsService()
+                    .loadUserByUsername(request.getEmail());
 
-        var jwt = jwtService.generateToken(user);
-        return new TokenResponse(jwt, "");
+            var jwt = jwtService.generateToken(user);
+            return new TokenResponse(jwt, "");
+        } catch (Exception e) {
+            return new TokenResponse("", e.getMessage());
+        }
     }
 }

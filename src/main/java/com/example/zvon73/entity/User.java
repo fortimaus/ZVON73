@@ -1,6 +1,6 @@
 package com.example.zvon73.entity;
 
-import com.example.zvon73.Role;
+import com.example.zvon73.entity.Enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

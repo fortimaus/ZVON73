@@ -1,6 +1,6 @@
 package com.example.zvon73.service.authentication;
 
-import com.example.zvon73.Role;
+import com.example.zvon73.entity.Enums.Role;
 import com.example.zvon73.controller.domain.SignInRequest;
 import com.example.zvon73.controller.domain.SignUpRequest;
 import com.example.zvon73.controller.domain.TokenResponse;

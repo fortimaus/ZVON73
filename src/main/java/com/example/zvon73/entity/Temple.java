@@ -25,7 +25,7 @@ public class Temple {
     @Column(name = "title", nullable = false)
     private String title ;
 
-    @Column(name = "desc", nullable = false)
+    @Column(name = "description", nullable = false)
     private String description ;
 
     @Column(name = "address", nullable = false)

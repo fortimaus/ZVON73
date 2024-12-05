@@ -4,6 +4,7 @@ import com.example.zvon73.entity.Bell;
 import com.example.zvon73.entity.Enums.BellStatus;
 import com.example.zvon73.entity.Enums.OrderStatus;
 import com.example.zvon73.entity.Order;
+import com.example.zvon73.entity.User;
 import com.example.zvon73.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,13 +18,24 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class OrdersService {
     private final OrderRepository orderRepository;
+    private final UserService userService;
+    private final BellService bellService;
 
     @Transactional
     public Order create(Order order)
     {
-        return orderRepository.save(order);
+        User curUser = userService.getCurrentUser();
+        if(curUser.getId() == order.getTemple_start().getUser().getId())
+            return orderRepository.save(order);
+        else
+            throw new RuntimeException("Не имеешь права, хулиган");
     }
+@Transactional
+public Order createfalse(Order order)
+{
+    return orderRepository.save(order);
 
+}
     @Transactional(readOnly = true)
     public Order findById(UUID id){
         return orderRepository.findById(id)
@@ -56,9 +68,15 @@ public class OrdersService {
 
     @Transactional
     public Order updateStatusOnModeration(UUID id){
+        User curUser = userService.getCurrentUser();
         Order currentOrder = findById(id);
-        currentOrder.setStatus(OrderStatus.Waiting_moderator);
-        return orderRepository.save(currentOrder);
+        if (curUser.getId() == currentOrder.getTemple_end().getUser().getId()) {
+            currentOrder.setStatus(OrderStatus.Waiting_moderator);
+            return orderRepository.save(currentOrder);
+
+        }
+        else
+            throw new RuntimeException("Не имеешь права, хулиган");
     }
 
     @Transactional
@@ -72,6 +90,7 @@ public class OrdersService {
     public Order updateStatusOnAccepted(UUID id){
         Order currentOrder = findById(id);
         currentOrder.setStatus(OrderStatus.Accepted);
+        bellService.updateStatusAccepted(currentOrder.getBell().getId());
         return orderRepository.save(currentOrder);
     }
 
@@ -79,6 +98,7 @@ public class OrdersService {
     public Order updateStatusOnPath(UUID id){
         Order currentOrder = findById(id);
         currentOrder.setStatus(OrderStatus.In_path);
+        bellService.updateStatusInPath(currentOrder.getBell().getId());
         return orderRepository.save(currentOrder);
     }
 
@@ -86,6 +106,7 @@ public class OrdersService {
     public Order updateStatusOnFinished(UUID id){
         Order currentOrder = findById(id);
         currentOrder.setStatus(OrderStatus.Finished);
+        bellService.updateStatusAccepted(currentOrder.getBell().getId());
         return orderRepository.save(currentOrder);
     }
 
@@ -93,6 +114,7 @@ public class OrdersService {
     public Order updateStatusOnCancelled(UUID id){
         Order currentOrder = findById(id);
         currentOrder.setStatus(OrderStatus.Cancelled);
+        bellService.updateStatusAccepted(currentOrder.getBell().getId());
         return orderRepository.save(currentOrder);
     }
 }

@@ -8,7 +8,7 @@ databaseChangeLog:
             columns: # объявления колонок
               - column:
                   name: id
-                  type: uuid
+                  type: bigint
                   autoIncrement: true
                   constraints:
                     primaryKey: true
@@ -39,7 +39,7 @@ databaseChangeLog:
             columns: # объявления колонок
               - column:
                   name: id
-                  type: uuid
+                  type: bigint
                   autoIncrement: true
                   constraints:
                     primaryKey: true
@@ -66,12 +66,12 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: image
-                  type: bytea
+                  type: BYTEA
                   constraints:
                     nullable: false
               - column:
                   name: operatorId
-                  type: uuid
+                  type: bigint
                   constraints:
                     foreignKeyName: user_temple_fk
                     referencedTableName: users
@@ -82,7 +82,7 @@ databaseChangeLog:
             columns: # объявления колонок
               - column:
                   name: id
-                  type: uuid
+                  type: bigint
                   autoIncrement: true
                   constraints:
                     primaryKey: true
@@ -94,7 +94,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: templeId
-                  type: uuid
+                  type: bigint
                   constraints:
                     foreignKeyName: temple_bell_tower_fk
                     referencedTableName: temples
@@ -105,7 +105,7 @@ databaseChangeLog:
             columns: # объявления колонок
               - column:
                   name: id
-                  type: uuid
+                  type: bigint
                   autoIncrement: true
                   constraints:
                     primaryKey: true
@@ -142,7 +142,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: bell_towerId
-                  type: uuid
+                  type: bigint
                   constraints:
                     foreignKeyName: bell_tower_bell_fk
                     referencedTableName: bell_towers
@@ -153,14 +153,14 @@ databaseChangeLog:
             columns: # объявления колонок
               - column:
                   name: id
-                  type: uuid
+                  type: bigint
                   autoIncrement: true
                   constraints:
                     primaryKey: true
                     nullable: false
               - column:
                   name: temple_startId
-                  type: uuid
+                  type: bigint
                   constraints:
                     foreignKeyName: temple_start_order_fk
                     referencedTableName: temples
@@ -168,7 +168,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: temple_endId
-                  type: uuid
+                  type: bigint
                   constraints:
                     foreignKeyName: temple_end_order_fk
                     referencedTableName: temples
@@ -176,7 +176,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: bell_tower_startId
-                  type: uuid
+                  type: bigint
                   constraints:
                     foreignKeyName: bell_tower_start_order_fk
                     referencedTableName: bell_towers
@@ -184,7 +184,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: bell_tower_endId
-                  type: uuid
+                  type: bigint
                   constraints:
                     foreignKeyName: bell_tower_end_order_fk
                     referencedTableName: bell_towers
@@ -192,7 +192,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: bellId
-                  type: uuid
+                  type: bigint
                   constraints:
                     foreignKeyName: bell_order_fk
                     referencedTableName: bells

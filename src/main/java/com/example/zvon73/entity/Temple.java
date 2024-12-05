@@ -34,8 +34,7 @@ public class Temple {
     @Column(name = "phone", nullable = false)
     private String phone ;
 
-    @Lob
-    @Column(name = "image", columnDefinition = "BLOB")
+    @Column(name = "image", columnDefinition = "bytea")
     private byte[] image ;
 
     @OneToOne

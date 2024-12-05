@@ -20,7 +20,6 @@ import java.util.UUID;
 public class BellService {
 
     private final BellRepository bellRepository;
-
     @Transactional
     public Bell create(Bell bell)
     {
@@ -33,7 +32,7 @@ public class BellService {
                 .orElseThrow(() -> new NotFoundException("Колокола с данным id не найден"));
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public Bell update(Bell newBell)
     {
         Bell currentBell = findById(newBell.getId());
@@ -62,32 +61,32 @@ public class BellService {
         return bellRepository.save(currentBell);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public Bell delete(UUID id){
         Bell currentBell = findById(id);
         bellRepository.delete(currentBell);
         return currentBell;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Bell> findAll(){
         return bellRepository.findAll();
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Bell> findByTemple(UUID uid){
         return bellRepository.findByTempleId(uid)
                 .orElseThrow(() -> new NotFoundException("Колоколов у храма с таким id не найден"));
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public Bell updateStatusAccepted(UUID id){
         Bell currentBell = findById(id);
         currentBell.setStatus(BellStatus.Accepted);
         return bellRepository.save(currentBell);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public Bell updateStatusInPath(UUID id){
         Bell currentBell = findById(id);
         currentBell.setStatus(BellStatus.In_path);

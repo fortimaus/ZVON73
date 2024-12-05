@@ -31,12 +31,10 @@ public class Bell {
     @Column(name = "weight", nullable = false)
     private int weight;
 
-    @Lob
-    @Column(name = "image", columnDefinition="BLOB", nullable = false)
+    @Column(name = "image", columnDefinition="bytea", nullable = false)
     private byte[] image ;
 
-    @Lob
-    @Column(name = "sound", columnDefinition="BLOB", nullable = false)
+    @Column(name = "sound", columnDefinition="bytea", nullable = false)
     private byte[] sound ;
 
     @Enumerated(EnumType.STRING)

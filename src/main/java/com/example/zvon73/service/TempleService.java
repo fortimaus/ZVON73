@@ -18,7 +18,7 @@ import java.util.UUID;
 public class TempleService {
 
     private final TempleRepository templeRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     @Transactional
     public Temple create(Temple temple)
@@ -70,16 +70,16 @@ public class TempleService {
     }
 
     @Transactional(readOnly = true)
-    public Temple findByOperatorId(UUID id){
-        return templeRepository.findByUserId(id)
+    public Temple findByUser(){
+        User currentUser = userService.getCurrentUser();
+        return templeRepository.findByUser(currentUser)
                 .orElseThrow(() -> new NotFoundException("У данного оператора нет храма"));
 
     }
 
     @Transactional
-    public Temple updateOperator(UUID templeId, UUID operatorId){
-        User currentUser = userRepository.findById(operatorId)
-                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+    public Temple updateOperator(UUID templeId, UUID userId){
+        User currentUser = userService.findById(userId);
         Temple currentTemple = findById(templeId);
         if (!currentTemple.getUser().equals(currentUser))
             currentTemple.setUser(currentUser);

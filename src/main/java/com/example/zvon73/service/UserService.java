@@ -20,6 +20,10 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public User findById(UUID id){
+        return userRepository.findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден"));
+    }
 
     public User create(User user) {
         if (userRepository.existsByEmail(user.getUsername())) {

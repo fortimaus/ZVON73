@@ -19,6 +19,7 @@ public class BellTowerService {
 
 
     private final BellTowerRepository bellTowerRepository;
+    private final TempleService templeService;
 
     @Transactional
     public BellTower create(BellTower bellTower)
@@ -62,8 +63,9 @@ public class BellTowerService {
     }
 
     @Transactional(readOnly = true)
-    public List<BellTower> findAllByTempleId(UUID id){
-        return bellTowerRepository.findByTempleId(id)
+    public List<BellTower> findAllByTemple(UUID id){
+        Temple currenttemple = templeService.findById(id);
+        return bellTowerRepository.findByTemple(currenttemple)
                 .orElseThrow(() -> new NotFoundException("Колокольня у храма с данным id не найден"));
     }
 }

@@ -65,7 +65,7 @@ public class UserService {
                 throw new RuntimeException("Токен истёк. Пожалуйста, запросите новый.");
             }
 
-            user.setRole(Role.USER);
+            user.setRole(Role.ROLE_USER);
             user.setVerificationToken(null);
             user.setTokenExpiryDate(null);
 

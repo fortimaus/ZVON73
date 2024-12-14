@@ -11,6 +11,7 @@ import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,6 +58,10 @@ public class AuthenticationService {
 
     public TokenResponse signIn(SignInRequest request) {
         try {
+            var checkUser = userService.findByEmail(request.getEmail());
+            if(checkUser.isPresent() && checkUser.get().getRole() == Role.NOT_CONFIRMED){
+                throw new UsernameNotFoundException("Пользователь с такой почтой не найден");
+            }
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                     request.getEmail(),
                     request.getPassword()

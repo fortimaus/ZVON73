@@ -2,12 +2,12 @@ spring:
   application.name: spring
   datasource:
     url: jdbc:postgresql://localhost:5432/zvon73
-    username: root
-    password: 123456
+    username: postgres
+    password: azor1234
     driverClassName: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
   mail:
     host: smtp.mail.ru
     port: 465

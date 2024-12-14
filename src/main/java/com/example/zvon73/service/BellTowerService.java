@@ -1,10 +1,13 @@
 package com.example.zvon73.service;
 
+import com.example.zvon73.DTO.BellTowerDto;
+import com.example.zvon73.entity.Bell;
 import com.example.zvon73.entity.BellTower;
 import com.example.zvon73.entity.Temple;
 import com.example.zvon73.repository.BellTowerRepository;
 import com.example.zvon73.repository.TempleRepository;
 import com.example.zvon73.repository.UserRepository;
+import com.example.zvon73.service.Exceptions.ValidateException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,10 +24,23 @@ public class BellTowerService {
     private final BellTowerRepository bellTowerRepository;
     private final TempleService templeService;
 
+    private void validate(BellTowerDto bellTower){
+        if(bellTower.getTitle().isEmpty() || bellTower.getTitle().length() < 5 || bellTower.getTitle().length() >100)
+            throw new ValidateException("Некорректное название колокольни");
+        if(bellTower.getTemple().toString().isEmpty())
+            throw new ValidateException("Некорректной номер храма колокольни");
+    }
+
     @Transactional
-    public BellTower create(BellTower bellTower)
+    public BellTower create(BellTowerDto bellTower)
     {
-        return bellTowerRepository.save(bellTower);
+        validate(bellTower);
+        Temple temple = templeService.findById(bellTower.getTemple());
+        BellTower newBellTower = BellTower.builder()
+                .title(bellTower.getTitle())
+                .temple(temple)
+                .build();
+        return bellTowerRepository.save(newBellTower);
     }
 
     @Transactional(readOnly = true)
@@ -34,18 +50,19 @@ public class BellTowerService {
     }
 
     @Transactional
-    public BellTower update(BellTower newBellTower)
+    public BellTower update(BellTowerDto newBellTower)
     {
+        validate(newBellTower);
         BellTower currentBellTower = findById(newBellTower.getId());
-        if (!newBellTower.equals(currentBellTower))
-        {
+
             if( !currentBellTower.getTitle().equals(newBellTower.getTitle()) )
                 currentBellTower.setTitle(newBellTower.getTitle());
 
             if( !currentBellTower.getTemple().equals(newBellTower.getTemple()) ) {
-                currentBellTower.setTemple(newBellTower.getTemple());
+                Temple newTemple = templeService.findById(newBellTower.getTemple());
+                currentBellTower.setTemple(newTemple);
             }
-        }
+
 
         return bellTowerRepository.save(currentBellTower);
     }

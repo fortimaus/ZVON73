@@ -1,10 +1,12 @@
 package com.example.zvon73.service;
 
+import com.example.zvon73.DTO.BellDto;
 import com.example.zvon73.entity.Bell;
 import com.example.zvon73.entity.BellTower;
 import com.example.zvon73.entity.Enums.BellStatus;
 import com.example.zvon73.repository.BellRepository;
 import com.example.zvon73.repository.BellTowerRepository;
+import com.example.zvon73.service.Exceptions.ValidateException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,10 +22,25 @@ import java.util.UUID;
 public class BellService {
 
     private final BellRepository bellRepository;
+    private final BellTowerService bellTowerService;
     @Transactional
-    public Bell create(Bell bell)
+    public Bell create(BellDto bell)
     {
-        return bellRepository.save(bell);
+
+        validate(bell);
+
+        BellTower bellTower = bellTowerService.findById(bell.getBellTower());
+
+        Bell newBell = Bell.builder()
+                .title(bell.getTitle())
+                .weight(bell.getWeight())
+                .manufacturer(bell.getManufacturer())
+                .image(bell.getImage())
+                .sound(bell.getSound())
+                .bellTower(bellTower)
+                .status(BellStatus.Accepted)
+                .build();
+        return bellRepository.save(newBell);
     }
 
     @Transactional(readOnly = true)
@@ -31,13 +48,26 @@ public class BellService {
         return bellRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Колокола с данным id не найден"));
     }
+    private void validate(BellDto bell){
+        if(bell.getTitle().isEmpty() || bell.getTitle().length() < 5 || bell.getTitle().length() >100)
+            throw new ValidateException("Некорректное название колокола");
+        if(bell.getWeight() < 0)
+            throw new ValidateException("Некорректной вес колокола");
+        if(bell.getManufacturer().isEmpty() || bell.getManufacturer().length() < 3 || bell.getManufacturer().length() > 100)
+            throw new ValidateException("Некорректное название производителя");
+        if(bell.getImage().length == 0)
+            throw new ValidateException("Некорректное изображение колокола");
+        if(bell.getSound().length == 0)
+            throw new ValidateException("Некорректный звук колокола");
+        if(bell.getBellTower().toString().isEmpty())
+            throw new ValidateException("Некорректный номер колокольни");
+    }
 
     @Transactional
-    public Bell update(Bell newBell)
+    public Bell update(BellDto newBell)
     {
         Bell currentBell = findById(newBell.getId());
-        if (!newBell.equals(currentBell))
-        {
+        validate(newBell);
             if( !currentBell.getTitle().equals(newBell.getTitle()) )
                 currentBell.setTitle(newBell.getTitle());
 
@@ -47,16 +77,16 @@ public class BellService {
             if( currentBell.getWeight() != (newBell.getWeight()) )
                 currentBell.setWeight(newBell.getWeight());
 
-            if( currentBell.getBellTower() != (newBell.getBellTower()) )
-                currentBell.setBellTower(newBell.getBellTower());
+            if( currentBell.getBellTower().getId() != (newBell.getBellTower())) {
+                BellTower newBellTower = bellTowerService.findById(newBell.getBellTower());
+                currentBell.setBellTower(newBellTower);
+            }
 
             if ( !Arrays.equals(currentBell.getSound(), newBell.getSound()) )
                 currentBell.setSound(newBell.getSound());
 
             if( !Arrays.equals(currentBell.getImage(), newBell.getImage()) )
                 currentBell.setImage(newBell.getImage());
-
-        }
 
         return bellRepository.save(currentBell);
     }

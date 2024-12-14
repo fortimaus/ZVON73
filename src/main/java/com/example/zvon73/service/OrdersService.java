@@ -1,16 +1,16 @@
 package com.example.zvon73.service;
 
-import com.example.zvon73.entity.Bell;
+import com.example.zvon73.DTO.OrderDto;
+import com.example.zvon73.entity.*;
 import com.example.zvon73.entity.Enums.BellStatus;
 import com.example.zvon73.entity.Enums.OrderStatus;
-import com.example.zvon73.entity.Order;
-import com.example.zvon73.entity.User;
 import com.example.zvon73.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.webjars.NotFoundException;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,22 +20,32 @@ public class OrdersService {
     private final OrderRepository orderRepository;
     private final UserService userService;
     private final BellService bellService;
+    private  final TempleService templeService;
+    private final BellTowerService bellTowerService;
 
     @Transactional
-    public Order create(Order order)
+    public Order create(OrderDto order)
     {
         User curUser = userService.getCurrentUser();
-        if(curUser.getId() == order.getTemple_start().getUser().getId())
-            return orderRepository.save(order);
+        Temple templeStart = templeService.findById(order.getTemple_start());
+        if(curUser.getId() == templeStart.getUser().getId()) {
+            Temple templeEnd = templeService.findById(order.getTemple_end());
+            BellTower bellTowerStart = bellTowerService.findById(order.getBellTower_start());
+            Bell bell = bellService.findById(order.getBell());
+            Order newOrder = Order.builder()
+                    .temple_start(templeStart)
+                    .temple_end(templeEnd)
+                    .bellTower_start(bellTowerStart)
+                    .bellTower_end(null)
+                    .bell(bell)
+                    .status(OrderStatus.Waiting_operator)
+                    .build();
+            return orderRepository.save(newOrder);
+        }
         else
             throw new RuntimeException("Не имеешь права, хулиган");
     }
-@Transactional
-public Order createfalse(Order order)
-{
-    return orderRepository.save(order);
 
-}
     @Transactional(readOnly = true)
     public Order findById(UUID id){
         return orderRepository.findById(id)
@@ -44,26 +54,22 @@ public Order createfalse(Order order)
 
     @Transactional(readOnly = true)
     public List<Order> findOldByOperatorId(UUID id){
-        return orderRepository.findOldByOperatorId(id)
-                .orElseThrow(() -> new NotFoundException("Заявок у данного пользователя нет"));
+        return orderRepository.findOldByOperatorId(id);
     }
 
     @Transactional(readOnly = true)
     public List<Order> findNewByOperatorId(UUID id){
-        return orderRepository.findNewOrdersByOperatorId(id)
-                .orElseThrow(() -> new NotFoundException("Заявок у данного пользователя нет"));
+        return orderRepository.findNewOrdersByOperatorId(id);
     }
 
     @Transactional(readOnly = true)
     public List<Order> findForModeration(){
-        return orderRepository.findForModeration()
-                .orElseThrow(() -> new NotFoundException("Заявок для модерации нет"));
+        return orderRepository.findForModeration();
     }
 
     @Transactional(readOnly = true)
     public List<Order> findInPathForModerator(){
-        return orderRepository.findInPath()
-                .orElseThrow(() -> new NotFoundException("Заявок в пути нет"));
+        return orderRepository.findInPath();
     }
 
     @Transactional
@@ -79,18 +85,10 @@ public Order createfalse(Order order)
             throw new RuntimeException("Не имеешь права, хулиган");
     }
 
-    @Transactional
-    public Order updateStatusOnWaitingOperator(UUID id){
-        Order currentOrder = findById(id);
-        currentOrder.setStatus(OrderStatus.Waiting_operator);
-        return orderRepository.save(currentOrder);
-    }
-
-    @Transactional
-    public Order updateStatusOnAccepted(UUID id){
-        Order currentOrder = findById(id);
-        currentOrder.setStatus(OrderStatus.Accepted);
-        bellService.updateStatusAccepted(currentOrder.getBell().getId());
+    public Order updateBellTowerEnd(UUID idOrder ,UUID idTower){
+        Order currentOrder = findById(idOrder);
+        BellTower bellTower = bellTowerService.findById(idTower);
+        currentOrder.setBellTower_end(bellTower);
         return orderRepository.save(currentOrder);
     }
 
@@ -106,6 +104,7 @@ public Order createfalse(Order order)
     public Order updateStatusOnFinished(UUID id){
         Order currentOrder = findById(id);
         currentOrder.setStatus(OrderStatus.Finished);
+        currentOrder.setDate(new Date());
         bellService.updateStatusAccepted(currentOrder.getBell().getId());
         return orderRepository.save(currentOrder);
     }

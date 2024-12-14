@@ -14,18 +14,18 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
     @Query(value = "Select o.* from orders o " +
             "where o.temple_end_id in (SELECT t.id from temples t " +
             "where t.operator_id = :value) and o.status = 'Waiting_operator'", nativeQuery = true)
-    Optional<List<Order>> findNewOrdersByOperatorId(@Param("value") UUID id);
+    List<Order> findNewOrdersByOperatorId(@Param("value") UUID id);
 
     @Query(value = "Select o.* from orders o " +
             "where o.temple_start_id in (SELECT t.id from temples t " +
             "where t.operator_id = :value) and o.status != 'Waiting_operator'", nativeQuery = true)
-    Optional<List<Order>> findOldByOperatorId(@Param("value") UUID id);
+    List<Order> findOldByOperatorId(@Param("value") UUID id);
 
     @Query(value = "Select o.* from orders o " +
             "where o.status = 'Waiting_moderator' " , nativeQuery = true)
-    Optional<List<Order>> findForModeration();
+    List<Order> findForModeration();
 
     @Query(value = "Select o.* from orders o " +
             "where o.status = 'In_path' " , nativeQuery = true)
-    Optional<List<Order>> findInPath();
+    List<Order> findInPath();
 }

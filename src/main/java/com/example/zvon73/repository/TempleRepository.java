@@ -13,5 +13,7 @@ public interface TempleRepository extends JpaRepository<Temple, UUID> {
 
     Optional<Temple> findByUser(User user);
 
-    Optional<List<Temple>> findByUserIsNull();
+    Optional<List<Temple>> findAllByUserIsNull();
+
+    List<Temple> findAllByIdNot(UUID id);
 }

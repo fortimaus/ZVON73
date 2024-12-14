@@ -5,7 +5,6 @@ public enum OrderStatus {
     Waiting_operator ,
     Waiting_moderator,
     In_path ,
-    Accepted,
     Cancelled,
     Finished
 }

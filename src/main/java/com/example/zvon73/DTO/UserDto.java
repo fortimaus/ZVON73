@@ -18,7 +18,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class UserDto {
 
-    private UUID id;
+    private String id;
 
 
     private String role;
@@ -30,7 +30,7 @@ public class UserDto {
     private String phone;
 
     public UserDto(User user){
-        this.id = user.getId();
+        this.id = user.getId().toString();
         this.role = user.getRole().toString();
         this.email = user.getEmail();
         this.password = user.getPassword();

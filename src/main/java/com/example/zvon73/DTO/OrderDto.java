@@ -19,7 +19,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderDto {
-    private UUID id;
+    private String id;
 
 
     private UUID temple_start ;
@@ -49,7 +49,7 @@ public class OrderDto {
     private String status ;
 
     public OrderDto(Order order){
-        this.id = order.getId();
+        this.id = order.getId().toString();
         this.temple_start = order.getTemple_start().getId();
         this.temple_start_title = order.getTemple_start().getTitle();
         this.temple_end = order.getTemple_end().getId();

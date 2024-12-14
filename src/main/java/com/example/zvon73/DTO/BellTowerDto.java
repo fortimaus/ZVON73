@@ -18,27 +18,21 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BellTowerDto {
-
-    private UUID id;
-
-
+    private String id;
     private String title ;
 
-    private UUID temple ;
+    private String templeName;
 
-    private String temple_title;
+    private String templeId;
 
     private String address;
 
-    private List<BellDto> bells = new ArrayList<>();
 
     public BellTowerDto(BellTower bellTower){
-        this.id = bellTower.getId();
+        this.id = bellTower.getId().toString();
         this.title = bellTower.getTitle();
-        this.temple = bellTower.getTemple().getId();
-        this.temple_title = bellTower.getTemple().getTitle();
+        this.templeName = bellTower.getTemple().getTitle();
+        this.templeId = bellTower.getTemple().getId().toString();
         this.address = bellTower.getTemple().getAddress();
-        if(bellTower.getBells() != null && !bellTower.getBells().isEmpty())
-            this.bells = bellTower.getBells().stream().map(BellDto::new).toList();
     }
 }

@@ -17,7 +17,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class BellDto {
 
-    private UUID id;
+    private String id;
 
     private String title ;
 
@@ -34,7 +34,7 @@ public class BellDto {
     private UUID bellTower ;
 
     public BellDto(Bell bell){
-        this.id = bell.getId();
+        this.id = bell.getId().toString();
         this.title = bell.getTitle();
         this.manufacturer = bell.getManufacturer();
         this.weight = bell.getWeight();

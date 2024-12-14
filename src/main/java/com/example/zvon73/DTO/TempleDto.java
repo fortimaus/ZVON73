@@ -16,7 +16,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class TempleDto {
 
-    private UUID id;
+    private String id;
 
     private String title ;
 
@@ -32,7 +32,7 @@ public class TempleDto {
     private String userPhone = null ;
 
     public TempleDto(Temple temple){
-       this.id = temple.getId();
+       this.id = temple.getId().toString();
        this.title = temple.getTitle();
        this.description = temple.getDescription();
        this.address = temple.getAddress();

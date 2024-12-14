@@ -63,7 +63,7 @@ public class TempleService {
     public Temple update(TempleDto newTemple)
     {
         validate(newTemple);
-        Temple currentTemple = findById(newTemple.getId());
+        Temple currentTemple = findById(UUID.fromString(newTemple.getId()));
 
             if( !currentTemple.getAddress().equals(newTemple.getAddress()) )
                 currentTemple.setAddress(newTemple.getAddress());

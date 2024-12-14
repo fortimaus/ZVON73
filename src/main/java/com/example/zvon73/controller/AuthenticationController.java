@@ -3,7 +3,6 @@ package com.example.zvon73.controller;
 import com.example.zvon73.controller.domain.SignInRequest;
 import com.example.zvon73.controller.domain.SignUpRequest;
 import com.example.zvon73.controller.domain.TokenResponse;
-import com.example.zvon73.service.authentication.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

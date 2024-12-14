@@ -10,6 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -37,7 +38,9 @@ public class User implements UserDetails {
 
     @Column(name = "phone", unique = true)
     private String phone;
-
+    @Column(unique = true)
+    private String verificationToken;
+    private LocalDateTime tokenExpiryDate;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));

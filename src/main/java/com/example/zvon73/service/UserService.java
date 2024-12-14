@@ -1,5 +1,6 @@
 package com.example.zvon73.service;
 
+import com.example.zvon73.entity.Enums.Role;
 import com.example.zvon73.entity.User;
 import com.example.zvon73.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +9,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service

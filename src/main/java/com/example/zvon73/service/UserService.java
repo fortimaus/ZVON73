@@ -47,6 +47,10 @@ public class UserService {
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
         return getByUsername(username);
     }
+    public User findById(UUID id){
+        return userRepository.findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден"));
+    }
     public void deleteUser(User user){
         userRepository.delete(user);
     }

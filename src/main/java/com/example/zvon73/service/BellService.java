@@ -1,21 +1,21 @@
 package com.example.zvon73.service;
 
 import com.example.zvon73.DTO.BellDto;
+import com.example.zvon73.controller.domain.MessageResponse;
 import com.example.zvon73.entity.Bell;
 import com.example.zvon73.entity.BellTower;
 import com.example.zvon73.entity.Enums.BellStatus;
 import com.example.zvon73.repository.BellRepository;
-import com.example.zvon73.repository.BellTowerRepository;
 import com.example.zvon73.service.Exceptions.ValidateException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.webjars.NotFoundException;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,10 +26,9 @@ public class BellService {
     @Transactional
     public Bell create(BellDto bell)
     {
-
         validate(bell);
 
-        BellTower bellTower = bellTowerService.findById(bell.getBellTower());
+        BellTower bellTower = bellTowerService.findById(UUID.fromString(bell.getBellTowerId()));
 
         Bell newBell = Bell.builder()
                 .title(bell.getTitle())
@@ -59,14 +58,14 @@ public class BellService {
             throw new ValidateException("Некорректное изображение колокола");
         if(bell.getSound().length == 0)
             throw new ValidateException("Некорректный звук колокола");
-        if(bell.getBellTower().toString().isEmpty())
+        if(bell.getBellTowerId().toString().isEmpty())
             throw new ValidateException("Некорректный номер колокольни");
     }
 
     @Transactional
     public Bell update(BellDto newBell)
     {
-        Bell currentBell = findById(newBell.getId());
+        Bell currentBell = findById(UUID.fromString(newBell.getId()));
         validate(newBell);
             if( !currentBell.getTitle().equals(newBell.getTitle()) )
                 currentBell.setTitle(newBell.getTitle());
@@ -77,8 +76,8 @@ public class BellService {
             if( currentBell.getWeight() != (newBell.getWeight()) )
                 currentBell.setWeight(newBell.getWeight());
 
-            if( currentBell.getBellTower().getId() != (newBell.getBellTower())) {
-                BellTower newBellTower = bellTowerService.findById(newBell.getBellTower());
+            if( currentBell.getBellTower().getId() != (UUID.fromString(newBell.getBellTowerId()))) {
+                BellTower newBellTower = bellTowerService.findById(UUID.fromString(newBell.getBellTowerId()));
                 currentBell.setBellTower(newBellTower);
             }
 
@@ -92,21 +91,28 @@ public class BellService {
     }
 
     @Transactional
-    public Bell delete(UUID id){
-        Bell currentBell = findById(id);
-        bellRepository.delete(currentBell);
-        return currentBell;
+    public MessageResponse delete(UUID id){
+        try {
+            Bell currentBell = findById(id);
+            bellRepository.delete(currentBell);
+            return new MessageResponse("Колокол успешно удалён", "");
+        }catch (Exception e){
+            return new MessageResponse("", e.getMessage());
+        }
     }
 
     @Transactional(readOnly = true)
-    public List<Bell> findAll(){
-        return bellRepository.findAll();
+    public List<BellDto> findAll(){
+        return bellRepository.findAll().stream().map(BellDto::new).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public List<Bell> findByTemple(UUID uid){
-        return bellRepository.findByTempleId(uid)
-                .orElseThrow(() -> new NotFoundException("Колоколов у храма с таким id не найден"));
+    public List<BellDto> findByTemple(UUID uid){
+        return bellRepository.findByTempleId(uid).stream().map(BellDto::new).collect(Collectors.toList());
+    }
+    @Transactional(readOnly = true)
+    public List<BellDto> findByName(String name){
+        return bellRepository.findListByName('%'+name+'%').stream().map(BellDto::new).collect(Collectors.toList());
     }
 
     @Transactional

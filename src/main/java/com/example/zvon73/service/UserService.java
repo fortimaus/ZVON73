@@ -1,13 +1,20 @@
 package com.example.zvon73.service;
 
+import com.example.zvon73.DTO.UserDto;
+import com.example.zvon73.controller.domain.MessageResponse;
+import com.example.zvon73.controller.domain.RoleRequest;
+import com.example.zvon73.controller.domain.TempleOperatorRequest;
 import com.example.zvon73.entity.Enums.Role;
+import com.example.zvon73.entity.Temple;
 import com.example.zvon73.entity.User;
+import com.example.zvon73.repository.TempleRepository;
 import com.example.zvon73.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -18,6 +25,8 @@ import java.util.UUID;
 public class UserService {
 
     private final UserRepository userRepository;
+
+    private final TempleService templeService;
 
     public User save(User user) {
         return userRepository.save(user);
@@ -30,6 +39,36 @@ public class UserService {
         }
         return save(user);
     }
+    @Transactional
+    public User update(UserDto userDto){
+        User currentUser = findById(UUID.fromString(userDto.getId()));
+
+        if( !currentUser.getEmail().equals(userDto.getEmail()) )
+            currentUser.setEmail(userDto.getEmail());
+        if (!currentUser.getPhone().equals(userDto.getPhone()))
+            currentUser.setPhone(userDto.getPhone());
+        if (!currentUser.getPassword().equals(userDto.getPassword()))
+            currentUser.setPassword(userDto.getPassword());
+
+        return userRepository.save(currentUser);
+    }
+
+//    @Transactional
+//    public MessageResponse updateRole(RoleRequest request){
+//        try{
+//            User updateUser = findById(UUID.fromString(request.getUser()));
+//            Role newRole = Role.valueOf(request.getRole());
+//            updateUser.setRole(newRole);
+//            templeService.updateOperator(new TempleOperatorRequest(request.getTemple(), request.getUser()));
+//            userRepository.save(updateUser);
+//            return new MessageResponse("Роль изменена", "");
+//        }catch (Exception ex)
+//        {
+//            return new MessageResponse("", ex.getMessage());
+//        }
+//
+//    }
+
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }

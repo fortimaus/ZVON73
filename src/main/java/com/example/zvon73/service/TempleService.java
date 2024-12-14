@@ -116,7 +116,7 @@ public class TempleService {
         try {
             User currentUser = userService.findById(UUID.fromString(request.getUser()));
             Temple currentTemple = findById(UUID.fromString(request.getTemple()));
-            if (!currentTemple.getUser().equals(currentUser))
+            if (currentTemple.getUser() == null || !currentTemple.getUser().equals(currentUser))
                 currentTemple.setUser(currentUser);
             templeRepository.save(currentTemple);
             return new MessageResponse("Оператор изменён", "");

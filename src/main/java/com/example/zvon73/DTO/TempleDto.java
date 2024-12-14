@@ -29,7 +29,7 @@ public class TempleDto {
     private byte[] image ;
 
 
-    private UUID user = null ;
+    private String userPhone = null ;
 
     public TempleDto(Temple temple){
        this.id = temple.getId();
@@ -39,6 +39,6 @@ public class TempleDto {
        this.phone = temple.getPhone();
        this.image = temple.getImage();
        if(temple.getUser() != null)
-            this.user = temple.getUser().getId();
+            this.userPhone = temple.getUser().getPhone();
     }
 }

@@ -1,6 +1,8 @@
 package com.example.zvon73.service;
 
 import com.example.zvon73.DTO.TempleDto;
+import com.example.zvon73.controller.domain.MessageResponse;
+import com.example.zvon73.controller.domain.TempleOperatorRequest;
 import com.example.zvon73.entity.Bell;
 import com.example.zvon73.entity.Temple;
 import com.example.zvon73.entity.User;
@@ -15,6 +17,7 @@ import org.webjars.NotFoundException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -81,15 +84,23 @@ public class TempleService {
     }
 
     @Transactional
-    public Temple delete(UUID id){
-        Temple currentTemple = findById(id);
-        templeRepository.delete(currentTemple);
-        return currentTemple;
+    public MessageResponse delete(UUID id){
+        try {
+            Temple currentTemple = findById(id);
+            templeRepository.delete(currentTemple);
+            return new MessageResponse("Храм успешно удален", "");
+        }catch (Exception e){
+            return new MessageResponse("", e.getMessage());
+        }
     }
 
     @Transactional(readOnly = true)
-    public List<Temple> findAll(){
-        return templeRepository.findAll();
+    public List<TempleDto> findAll(){
+        return templeRepository.findAll().stream().map(TempleDto::new).collect(Collectors.toList());
+    }
+    @Transactional(readOnly = true)
+    public List<TempleDto> findListByName(String name){
+        return templeRepository.findListByName('%'+name+'%').stream().map(TempleDto::new).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -100,18 +111,17 @@ public class TempleService {
 
     }
 
-    @Transactional(readOnly = true)
-    public List<Temple> findAllByIdNot(UUID id){
-        return templeRepository.findAllByIdNot(id);
-
-    }
-
     @Transactional
-    public Temple updateOperator(UUID templeId, UUID userId){
-        User currentUser = userService.findById(userId);
-        Temple currentTemple = findById(templeId);
-        if (!currentTemple.getUser().equals(currentUser))
-            currentTemple.setUser(currentUser);
-        return templeRepository.save(currentTemple);
+    public MessageResponse updateOperator(TempleOperatorRequest request){
+        try {
+            User currentUser = userService.findById(UUID.fromString(request.getUser()));
+            Temple currentTemple = findById(UUID.fromString(request.getTemple()));
+            if (!currentTemple.getUser().equals(currentUser))
+                currentTemple.setUser(currentUser);
+            templeRepository.save(currentTemple);
+            return new MessageResponse("Оператор изменён", "");
+        }catch (Exception e){
+            return new MessageResponse("", e.getMessage());
+        }
     }
 }

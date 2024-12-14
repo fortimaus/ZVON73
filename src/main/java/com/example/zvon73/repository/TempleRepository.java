@@ -14,6 +14,8 @@ public interface TempleRepository extends JpaRepository<Temple, UUID> {
     Optional<Temple> findByUser(User user);
 
     Optional<List<Temple>> findAllByUserIsNull();
+    @Query("SELECT t FROM Temple t WHERE TRIM(LOWER(t.title)) LIKE TRIM(LOWER(:name))")
+    List<Temple> findListByName(String name);
 
     List<Temple> findAllByIdNot(UUID id);
 }

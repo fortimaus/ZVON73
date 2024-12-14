@@ -20,16 +20,15 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User findById(UUID id){
-        return userRepository.findById(id)
-                .orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден"));
-    }
 
     public User create(User user) {
         if (userRepository.existsByEmail(user.getUsername())) {
             throw new RuntimeException("Пользователь с таким именем уже существует");
         }
         return save(user);
+    }
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
     public User getByUsername(String username) {
@@ -44,5 +43,28 @@ public class UserService {
     public User getCurrentUser() {
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
         return getByUsername(username);
+    }
+    public void deleteUser(User user){
+        userRepository.delete(user);
+    }
+    public Optional<User> verifyEmail(String token) {
+        Optional<User> userOpt = userRepository.findByVerificationToken(token);
+
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+
+            // Проверка на истечение токена
+            if (user.getTokenExpiryDate() != null && user.getTokenExpiryDate().isBefore(LocalDateTime.now())) {
+                throw new RuntimeException("Токен истёк. Пожалуйста, запросите новый.");
+            }
+
+            user.setRole(Role.USER);
+            user.setVerificationToken(null);
+            user.setTokenExpiryDate(null);
+
+            userRepository.save(user);
+            return Optional.of(user);
+        }
+        return Optional.empty();
     }
 }

@@ -36,6 +36,10 @@ public class TempleController {
     public ResponseEntity<MessageResponse> changeOperator(@RequestBody TempleOperatorRequest request){
         return ResponseEntity.ok(templeService.updateOperator(request));
     }
+    @GetMapping
+    public ResponseEntity<TempleDto> get(@RequestParam("id") String id){
+        return ResponseEntity.ok(new TempleDto(templeService.findById(UUID.fromString(id))));
+    }
     @PutMapping("/edit")
     public ResponseEntity<TempleDto> editTemple(@RequestBody TempleDto templeDto){
         return ResponseEntity.ok(new TempleDto(templeService.update(templeDto)));

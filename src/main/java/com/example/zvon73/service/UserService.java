@@ -26,7 +26,7 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    private final TempleService templeService;
+    private final TempleRepository templeRepository;
 
     public User save(User user) {
         return userRepository.save(user);
@@ -60,7 +60,16 @@ public class UserService {
             Role newRole = Role.valueOf(request.getRole());
             updateUser.setRole(newRole);
             if(!request.getTemple().isEmpty()){
-                templeService.updateOperator(new TempleOperatorRequest(request.getTemple(), request.getUser()));
+
+                Temple oldTemple = templeRepository.findByUser(updateUser);
+                if(oldTemple != null)
+                {
+                    oldTemple.setUser(null);
+                    templeRepository.save(oldTemple);
+                }
+                Temple newTemple = templeRepository.findById(UUID.fromString(request.getTemple())).orElseThrow();
+                newTemple.setUser(updateUser);
+                templeRepository.save(newTemple);
             }
             userRepository.save(updateUser);
             return new MessageResponse("Роль изменена", "");

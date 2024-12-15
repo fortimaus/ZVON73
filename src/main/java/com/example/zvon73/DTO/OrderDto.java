@@ -56,7 +56,7 @@ public class OrderDto {
         this.temple_end_title = order.getTemple_end().getTitle();
         this.bellTower_start = order.getBellTower_start().getId().toString();
         this.bellTower_start_title = order.getBellTower_start().getTitle();
-        if(order.getTemple_end()!=null) {
+        if(order.getBellTower_end()!=null) {
             this.bellTower_end = order.getBellTower_end().getId().toString();
             this.bellTower_end_title = order.getBellTower_end().getTitle();
         }

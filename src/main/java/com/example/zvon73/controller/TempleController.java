@@ -32,6 +32,10 @@ public class TempleController {
     public ResponseEntity<TempleDto> getTempleByUser(){
         return ResponseEntity.ok(new TempleDto(templeService.findByUser()));
     }
+    @GetMapping
+    public ResponseEntity<TempleDto> get(@RequestParam("id") String id){
+        return ResponseEntity.ok(new TempleDto(templeService.findById(UUID.fromString(id))));
+    }
     @PostMapping("/create")
     public ResponseEntity<TempleDto> createTemple(@RequestBody TempleDto templeDto){
         return ResponseEntity.ok(new TempleDto(templeService.create(templeDto)));
@@ -40,6 +44,7 @@ public class TempleController {
     public ResponseEntity<MessageResponse> changeOperator(@RequestBody TempleOperatorRequest request){
         return ResponseEntity.ok(templeService.updateOperator(request));
     }
+
     @PutMapping("/edit")
     public ResponseEntity<TempleDto> editTemple(@RequestBody TempleDto templeDto){
         return ResponseEntity.ok(new TempleDto(templeService.update(templeDto)));

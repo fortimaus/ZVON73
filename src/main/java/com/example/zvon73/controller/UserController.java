@@ -2,6 +2,8 @@ package com.example.zvon73.controller;
 
 
 import com.example.zvon73.DTO.UserDto;
+import com.example.zvon73.controller.domain.MessageResponse;
+import com.example.zvon73.controller.domain.RoleRequest;
 import com.example.zvon73.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,11 @@ public class UserController {
     @PutMapping("/update")
     public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto){
         return ResponseEntity.ok(new UserDto(userService.update(userDto)));
+    }
+
+    @PutMapping("/role")
+    public ResponseEntity<MessageResponse> updateRole(@RequestBody RoleRequest request){
+        return ResponseEntity.ok(userService.updateRole(request));
     }
     @GetMapping
     public ResponseEntity<UserDto> get(@RequestParam("id") String id){

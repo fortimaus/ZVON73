@@ -106,8 +106,13 @@ public class TempleService {
     @Transactional(readOnly = true)
     public Temple findByUser(){
         User currentUser = userService.getCurrentUser();
-        return templeRepository.findByUser(currentUser)
-                .orElseThrow(() -> new NotFoundException("У данного оператора нет храма"));
+        return templeRepository.findByUser(currentUser);
+
+    }
+
+    @Transactional(readOnly = true)
+    public Temple findByUser(User user){
+        return templeRepository.findByUser(user);
 
     }
 
@@ -117,7 +122,16 @@ public class TempleService {
             User currentUser = userService.findById(UUID.fromString(request.getUser()));
             Temple currentTemple = findById(UUID.fromString(request.getTemple()));
             if (currentTemple.getUser() == null || !currentTemple.getUser().equals(currentUser))
+            {
+                Temple userTemple = findByUser(currentUser);
+                if(userTemple != null)
+                {
+                    userTemple.setUser(null);
+                    templeRepository.save(userTemple);
+                }
                 currentTemple.setUser(currentUser);
+            }
+
             templeRepository.save(currentTemple);
             return new MessageResponse("Оператор изменён", "");
         }catch (Exception e){

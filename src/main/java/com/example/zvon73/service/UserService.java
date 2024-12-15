@@ -53,21 +53,23 @@ public class UserService {
         return userRepository.save(currentUser);
     }
 
-//    @Transactional
-//    public MessageResponse updateRole(RoleRequest request){
-//        try{
-//            User updateUser = findById(UUID.fromString(request.getUser()));
-//            Role newRole = Role.valueOf(request.getRole());
-//            updateUser.setRole(newRole);
-//            templeService.updateOperator(new TempleOperatorRequest(request.getTemple(), request.getUser()));
-//            userRepository.save(updateUser);
-//            return new MessageResponse("Роль изменена", "");
-//        }catch (Exception ex)
-//        {
-//            return new MessageResponse("", ex.getMessage());
-//        }
-//
-//    }
+    @Transactional
+    public MessageResponse updateRole(RoleRequest request){
+        try{
+            User updateUser = findById(UUID.fromString(request.getUser()));
+            Role newRole = Role.valueOf(request.getRole());
+            updateUser.setRole(newRole);
+            if(!request.getTemple().isEmpty()){
+                templeService.updateOperator(new TempleOperatorRequest(request.getTemple(), request.getUser()));
+            }
+            userRepository.save(updateUser);
+            return new MessageResponse("Роль изменена", "");
+        }catch (Exception ex)
+        {
+            return new MessageResponse("", ex.getMessage());
+        }
+
+    }
 
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);

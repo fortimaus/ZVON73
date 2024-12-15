@@ -3,6 +3,7 @@ package com.example.zvon73.controller;
 import com.example.zvon73.DTO.OrderDto;
 import com.example.zvon73.controller.domain.OrderRequest;
 import com.example.zvon73.service.OrdersService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,9 +11,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+import static com.example.zvon73.config.SecurityConfig.SECURITY_CONFIG_NAME;
+
 @RestController
 @RequestMapping("/order")
 @RequiredArgsConstructor
+@SecurityRequirement(name = SECURITY_CONFIG_NAME)
 public class OrderController {
     private final OrdersService ordersService;
 

@@ -4,6 +4,7 @@ import com.example.zvon73.DTO.UserDto;
 import com.example.zvon73.controller.domain.MessageResponse;
 import com.example.zvon73.controller.domain.RoleRequest;
 import com.example.zvon73.controller.domain.TempleOperatorRequest;
+import com.example.zvon73.controller.domain.VerifyRequest;
 import com.example.zvon73.entity.Enums.Role;
 import com.example.zvon73.entity.Temple;
 import com.example.zvon73.entity.User;
@@ -104,24 +105,31 @@ public class UserService {
     public void deleteUser(User user){
         userRepository.delete(user);
     }
-    public Optional<User> verifyEmail(String token) {
-        Optional<User> userOpt = userRepository.findByVerificationToken(token);
-
+    public MessageResponse verifyEmail(VerifyRequest request) {
+        Optional<User> userOpt = findByEmail(request.getEmail());
         if (userOpt.isPresent()) {
-            User user = userOpt.get();
-
-            // Проверка на истечение токена
-            if (user.getTokenExpiryDate() != null && user.getTokenExpiryDate().isBefore(LocalDateTime.now())) {
-                throw new RuntimeException("Токен истёк. Пожалуйста, запросите новый.");
+            var user = userOpt.get();
+            if (user.getRole() != Role.NOT_CONFIRMED){
+                return new MessageResponse("", "Пользователь уже подтвержден");
             }
+            if (user.getTokenExpiryDate() != null && user.getTokenExpiryDate().isBefore(LocalDateTime.now())) {
+                return new MessageResponse("", "Токен истёк. Пожалуйста, запросите новый.");
+            }else if(user.getTokenExpiryDate() != null){
+                if(user.getVerificationToken().equals(request.getToken())){
+                    user.setRole(Role.USER);
+                    user.setVerificationToken(null);
+                    user.setTokenExpiryDate(null);
+                    userRepository.save(user);
 
-            user.setRole(Role.USER);
-            user.setVerificationToken(null);
-            user.setTokenExpiryDate(null);
-
-            userRepository.save(user);
-            return Optional.of(user);
+                    return new MessageResponse("Почта успешно подтверждена", "");
+                }else{
+                    return new MessageResponse("","Токен недействительный.");
+                }
+            }else{
+                return new MessageResponse("", "Неизвестная ошибка!");
+            }
+        }else{
+            return new MessageResponse("", "Пользователя с такой почтой не существует.");
         }
-        return Optional.empty();
     }
 }

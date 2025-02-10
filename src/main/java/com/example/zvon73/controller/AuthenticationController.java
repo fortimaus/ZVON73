@@ -1,8 +1,6 @@
 package com.example.zvon73.controller;
 
-import com.example.zvon73.controller.domain.SignInRequest;
-import com.example.zvon73.controller.domain.SignUpRequest;
-import com.example.zvon73.controller.domain.TokenResponse;
+import com.example.zvon73.controller.domain.*;
 import com.example.zvon73.entity.Enums.Role;
 import com.example.zvon73.entity.User;
 import com.example.zvon73.service.UserService;
@@ -21,7 +19,7 @@ public class AuthenticationController {
     private final UserService userService;
 
     @PostMapping("/sign-up")
-    public ResponseEntity<String> signUp(@RequestBody SignUpRequest request) {
+    public ResponseEntity<MessageResponse> signUp(@RequestBody SignUpRequest request) {
         return ResponseEntity.ok(authenticationService.signUp(request));
     }
 
@@ -30,24 +28,18 @@ public class AuthenticationController {
         return ResponseEntity.ok(authenticationService.signIn(request));
 
     }
-    @GetMapping("/verify")
-    public ResponseEntity<String> verifyEmail(@RequestParam("token") String token) {
-        Optional<User> userOpt = userService.verifyEmail(token);
-        if (userOpt.isPresent()) {
-            return ResponseEntity.ok("Почта успешно подтверждена!");
-        } else {
-            return ResponseEntity.badRequest().body("Неверный или истёкший токен.");
-        }
+    @PutMapping("/verify")
+    public ResponseEntity<MessageResponse> verifyEmail(@RequestBody VerifyRequest request) {
+        return ResponseEntity.ok(userService.verifyEmail(request));
     }
-    @PostMapping("/resend-token")
-    public ResponseEntity<String> resendToken(@RequestParam("email") String email) {
-        Optional<User> userOpt = userService.findByEmail(email);
+    @PutMapping("/resend-token")
+    public ResponseEntity<MessageResponse> resendToken(@RequestBody VerifyRequest request) {
+        Optional<User> userOpt = userService.findByEmail(request.getEmail());
         if (userOpt.isPresent() && userOpt.get().getRole() == Role.NOT_CONFIRMED) {
             User user = userOpt.get();
-
-            return ResponseEntity.ok(authenticationService.regenerateToken(user));
+            return ResponseEntity.ok(new MessageResponse(authenticationService.regenerateToken(user), ""));
         } else {
-            return ResponseEntity.badRequest().body("Пользователь не найден или уже подтвержден.");
+            return ResponseEntity.ok(new MessageResponse("", "Пользователь не найден или уже подтвержден."));
         }
     }
 }

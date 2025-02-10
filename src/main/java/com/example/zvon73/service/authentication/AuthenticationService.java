@@ -1,5 +1,6 @@
 package com.example.zvon73.service.authentication;
 
+import com.example.zvon73.controller.domain.MessageResponse;
 import com.example.zvon73.controller.domain.SignInRequest;
 import com.example.zvon73.controller.domain.SignUpRequest;
 import com.example.zvon73.controller.domain.TokenResponse;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Random;
 import java.util.UUID;
 
 @Service
@@ -30,7 +32,7 @@ public class AuthenticationService {
     private static final int TOKEN_VALIDITY_HOURS = 1;
 
     @Transactional
-    public String signUp(SignUpRequest request) {
+    public MessageResponse signUp(SignUpRequest request) {
 
         try {
             var checkUser = userService.findByEmail(request.getEmail());
@@ -45,14 +47,21 @@ public class AuthenticationService {
             generateVerificationToken(user);
             userService.create(user);
 
-            var jwt = jwtService.generateToken(user);
+            Thread emailSendThread = new Thread(new Runnable()
+            {
+                public void run()
+                {
+                    try {
+                        sendVerificationEmail(user);
+                    } catch (MessagingException e) {
 
-            String verificationLink = "http://localhost:8080/auth/verify?token=" + user.getVerificationToken();
-
-            sendVerificationEmail(user);
-            return "Письмо с подтверждением регистрации отправлена на почту";
+                    }
+                }
+            });
+            emailSendThread.start();
+            return new MessageResponse("Письмо с подтверждением регистрации отправлена на почту", "");
         }catch (Exception e){
-            return e.getMessage();
+            return new MessageResponse("", e.getMessage());
         }
     }
 
@@ -80,7 +89,18 @@ public class AuthenticationService {
         try {
             generateVerificationToken(user);
             userService.save(user);
-            sendVerificationEmail(user);
+            Thread emailSendThread = new Thread(new Runnable()
+            {
+                public void run()
+                {
+                    try {
+                        sendVerificationEmail(user);
+                    } catch (MessagingException e) {
+
+                    }
+                }
+            });
+            emailSendThread.start();
             return "Письмо с подтверждением регистрации отправлено на почту";
         }catch (Exception e){
             return e.getMessage();
@@ -88,17 +108,16 @@ public class AuthenticationService {
     }
 
     private void generateVerificationToken(User user) {
-        String token = UUID.randomUUID().toString();
-        user.setVerificationToken(token);
+        Random r = new Random( System.currentTimeMillis());
+        Integer token = 10000 + r.nextInt(20000);
+        user.setVerificationToken(token.toString());
         user.setTokenExpiryDate(LocalDateTime.now().plusHours(TOKEN_VALIDITY_HOURS));
     }
     private void sendVerificationEmail(User user) throws MessagingException {
-        String verificationLink = "http://localhost:8080/auth/verify?token=" + user.getVerificationToken();
-
-        String htmlContent = buildEmail(verificationLink); // Создаем HTML-контент письма
+        String htmlContent = buildEmail(user.getVerificationToken());
         emailService.sendHtmlEmail(user.getEmail(), "Подтверждение регистрации", htmlContent);
     }
-    private String buildEmail(String verificationLink) {
+    private String buildEmail(String verificationToken) {
         return """
             <!DOCTYPE html>
             <html>
@@ -125,15 +144,12 @@ public class AuthenticationService {
             </head>
             <body>
                 <div class="container">
-                    <h2>Подтверждение регистрации на сайте Zvon73</h2>
-                    <p>Спасибо за регистрацию. Для подтверждения почты нажмите на кнопку ниже:</p>
-                    <a href="%s">
-                        <button class="button">Подтвердить</button>
-                    </a>
-                    <p>Если вы не регистрировались на сайте Zvon73, то не надо подтверждать регистрацию. Просто закройте данное сообщение.</p>
+                    <h2>Подтверждение регистрации на сайте ZVON73</h2>
+                    <p>Спасибо за регистрацию. Ваш код подтверждения: <b>%s</b></p>
+                    <p>Если вы не регистрировались в ZVON73, просто закройте данное сообщение.</p>
                 </div>
             </body>
             </html>
-            """.formatted(verificationLink);
+            """.formatted(verificationToken);
     }
 }

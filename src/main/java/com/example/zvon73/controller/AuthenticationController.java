@@ -1,15 +1,11 @@
 package com.example.zvon73.controller;
 
 import com.example.zvon73.controller.domain.*;
-import com.example.zvon73.entity.Enums.Role;
-import com.example.zvon73.entity.User;
 import com.example.zvon73.service.UserService;
 import com.example.zvon73.service.authentication.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @RestController
 @RequestMapping("auth")
@@ -30,16 +26,18 @@ public class AuthenticationController {
     }
     @PutMapping("/verify")
     public ResponseEntity<MessageResponse> verifyEmail(@RequestBody VerifyRequest request) {
-        return ResponseEntity.ok(userService.verifyEmail(request));
+        return ResponseEntity.ok(authenticationService.verifyEmail(request));
     }
-    @PutMapping("/resend-token")
-    public ResponseEntity<MessageResponse> resendToken(@RequestBody VerifyRequest request) {
-        Optional<User> userOpt = userService.findByEmail(request.getEmail());
-        if (userOpt.isPresent() && userOpt.get().getRole() == Role.NOT_CONFIRMED) {
-            User user = userOpt.get();
-            return ResponseEntity.ok(new MessageResponse(authenticationService.regenerateToken(user), ""));
-        } else {
-            return ResponseEntity.ok(new MessageResponse("", "Пользователь не найден или уже подтвержден."));
-        }
+    @PutMapping("/send-token")
+    public ResponseEntity<MessageResponse> sendToken(@RequestBody VerifyRequest request) {
+        return ResponseEntity.ok(authenticationService.sendSecurityToken(request));
+    }
+    @GetMapping("/check-token")
+    public ResponseEntity<MessageResponse> checkToken(@RequestParam String token, @RequestParam String email){
+        return ResponseEntity.ok(authenticationService.checkToken(token, email));
+    }
+    @PutMapping("/change-password")
+    public ResponseEntity<MessageResponse> changePassword(@RequestBody ChangePasswordRequest request){
+        return ResponseEntity.ok(authenticationService.changePassword(request));
     }
 }

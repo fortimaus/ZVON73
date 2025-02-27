@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
 import java.util.UUID;
 
 @Data
@@ -14,8 +15,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "bells")
-public class Bell {
+@Table(name = "notices")
+public class Notice {
 
     @Id
     @GeneratedValue
@@ -37,18 +38,21 @@ public class Bell {
     @Column(name = "image", columnDefinition="bytea", nullable = false)
     private byte[] image ;
 
-    @Column(name = "sound", columnDefinition="bytea", nullable = false)
-    private byte[] sound ;
+    @Column(name = "description", nullable = false)
+    private String description ;
 
+    @Column(name = "give", nullable = false)
+    private boolean give ;
 
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status",nullable = false)
-    private BellStatus status ;
+    @Temporal(TemporalType.DATE)
+    @Column(name = "date")
+    private Date date ;
 
     @ManyToOne
-    @JoinColumn(name = "bell_towerId", nullable = false)
-    private BellTower bellTower ;
+    @JoinColumn(name = "bellId", nullable = true)
+    private Bell bell ;
 
-
+    @ManyToOne
+    @JoinColumn(name = "userId", nullable = false)
+    private User user ;
 }

@@ -5,6 +5,7 @@ import com.example.zvon73.DTO.NoticeDto;
 import com.example.zvon73.DTO.OrderDto;
 import com.example.zvon73.controller.domain.MessageResponse;
 import com.example.zvon73.entity.*;
+import com.example.zvon73.entity.Enums.TypeNotice;
 import com.example.zvon73.repository.NoticeRepository;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.weaver.ast.Not;
@@ -37,7 +38,7 @@ public class NoticeService {
                 .diameter(noticeDto.getDiameter())
                 .image(noticeDto.getImage())
                 .description(noticeDto.getDescription())
-                .give(noticeDto.isGive())
+                .type(TypeNotice.valueOf(noticeDto.getType()))
                 .date(new Date())
                 .user(curUser)
                 .temple(curTemple)
@@ -88,10 +89,10 @@ public class NoticeService {
     }
     @Transactional(readOnly = true)
     public List<NoticeDto> findGiveNotice(){
-        return noticeRepository.findTypeNotices(true).stream().map(NoticeDto::new).collect(Collectors.toList());
+        return noticeRepository.findByType(TypeNotice.Give).stream().map(NoticeDto::new).collect(Collectors.toList());
     }
     @Transactional(readOnly = true)
     public List<NoticeDto> findTakeNotice(){
-        return noticeRepository.findTypeNotices(false).stream().map(NoticeDto::new).collect(Collectors.toList());
+        return noticeRepository.findByType(TypeNotice.Take).stream().map(NoticeDto::new).collect(Collectors.toList());
     }
 }

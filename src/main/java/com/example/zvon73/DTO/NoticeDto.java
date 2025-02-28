@@ -32,7 +32,7 @@ public class NoticeDto {
 
     private String description ;
 
-    private boolean give ;
+    private String type ;
 
     private String  date ;
 
@@ -54,7 +54,7 @@ public class NoticeDto {
         this.diameter = notice.getDiameter();
         this.image = notice.getImage();
         this.description = notice.getDescription();
-        this.give = notice.isGive();
+        this.type = notice.getType().toString();
         this.date = notice.getDate().toString();
         this.bell = notice.getBell().getId().toString();
         this.user = notice.getUser().getId().toString();

@@ -41,7 +41,7 @@ public class TempleService {
 
     @Transactional
     public Temple create(TempleDto temple)
-    {   validate(temple);
+    {
         Temple newTemple = Temple.builder()
                 .title(temple.getTitle())
                 .address(temple.getAddress())
@@ -62,7 +62,7 @@ public class TempleService {
     @Transactional
     public Temple update(TempleDto newTemple)
     {
-        validate(newTemple);
+
         Temple currentTemple = findById(UUID.fromString(newTemple.getId()));
 
             if( !currentTemple.getAddress().equals(newTemple.getAddress()) )

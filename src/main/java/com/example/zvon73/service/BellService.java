@@ -26,7 +26,7 @@ public class BellService {
     @Transactional
     public Bell create(BellDto bell)
     {
-        validate(bell);
+
 
         BellTower bellTower = bellTowerService.findById(UUID.fromString(bell.getBellTowerId()));
 
@@ -66,7 +66,7 @@ public class BellService {
     public Bell update(BellDto newBell)
     {
         Bell currentBell = findById(UUID.fromString(newBell.getId()));
-        validate(newBell);
+
             if( !currentBell.getTitle().equals(newBell.getTitle()) )
                 currentBell.setTitle(newBell.getTitle());
 

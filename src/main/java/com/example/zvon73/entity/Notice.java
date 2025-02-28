@@ -1,6 +1,7 @@
 package com.example.zvon73.entity;
 
 import com.example.zvon73.entity.Enums.BellStatus;
+import com.example.zvon73.entity.Enums.TypeNotice;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -41,8 +42,9 @@ public class Notice {
     @Column(name = "description", nullable = false)
     private String description ;
 
-    @Column(name = "give", nullable = false)
-    private boolean give ;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type", nullable = false)
+    private TypeNotice type ;
 
     @Temporal(TemporalType.DATE)
     @Column(name = "date")

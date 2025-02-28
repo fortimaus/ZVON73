@@ -55,4 +55,8 @@ public class Notice {
     @ManyToOne
     @JoinColumn(name = "userId", nullable = false)
     private User user ;
+
+    @ManyToOne
+    @JoinColumn(name = "templeId", nullable = false)
+    private Temple temple ;
 }

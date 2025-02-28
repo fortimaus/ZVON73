@@ -1,5 +1,8 @@
 package com.example.zvon73;
 
+import com.example.zvon73.DTO.BellDto;
+import com.example.zvon73.DTO.BellTowerDto;
+import com.example.zvon73.DTO.TempleDto;
 import com.example.zvon73.entity.*;
 import com.example.zvon73.entity.Enums.BellStatus;
 import com.example.zvon73.entity.Enums.OrderStatus;
@@ -19,24 +22,26 @@ import java.util.List;
 
 @SpringBootTest
 class ZvonTests {
-//
-//	@Autowired
-//	private TempleService templeService;
-//
-//	@Autowired
-//	private BellTowerService bellTowerService;
-//
-//	@Autowired
-//	private BellService bellService;
-//
-//	@Autowired
-//	private OrdersService ordersService;
-//
-//	@Autowired
-//	private UserService userService;
-//
-//
-//	//@Test
+
+	@Autowired
+	private TempleService templeService;
+
+	@Autowired
+	private BellTowerService bellTowerService;
+
+	@Autowired
+	private BellService bellService;
+
+	@Autowired
+	private OrdersService ordersService;
+
+	@Autowired
+	private UserService userService;
+
+    @Autowired
+    private NoticeService noticeService;
+
+//	@Test
 //	void CreateTemple() throws IOException {
 //		byte[] image = Files.readAllBytes(Paths.get("C:\\JavaProjects\\Logo.jpg\\"));
 //		Temple t1 = Temple.builder()
@@ -46,7 +51,7 @@ class ZvonTests {
 //				.phone("+800")
 //				.image(image)
 //				.build();
-//		Temple res1 = templeService.create(t1);
+//		Temple res1 = templeService.create(new TempleDto(t1));
 //		Temple t2 = Temple.builder()
 //				.title("temple2")
 //				.description("desc")
@@ -54,7 +59,7 @@ class ZvonTests {
 //				.phone("+800")
 //				.image(image)
 //				.build();
-//		Temple res2 = templeService.create(t2);
+//		Temple res2 = templeService.create(new TempleDto(t2));
 //
 //		Assertions.assertNotNull(res1.getId());
 //		Assertions.assertNotNull(res2.getId());
@@ -70,7 +75,7 @@ class ZvonTests {
 //				.phone("+800")
 //				.image(image)
 //				.build();
-//		templeService.create(t);
+//		templeService.create(new TempleDto(t));
 //		BellTower tw1 = BellTower.builder()
 //				.title("tower bell1")
 //				.temple(t)
@@ -79,14 +84,14 @@ class ZvonTests {
 //				.title("tower bell2")
 //				.temple(t)
 //				.build();
-//		BellTower res1 = bellTowerService.create(tw1);
-//		BellTower res2 = bellTowerService.create(tw2);
+//		BellTower res1 = bellTowerService.create(new BellTowerDto(tw1));
+//		BellTower res2 = bellTowerService.create(new BellTowerDto(tw2));
 //
 //		Assertions.assertNotNull(res1.getId());
 //		Assertions.assertNotNull(res2.getId());
 //	}
-//
-//	//@Test
+
+//	@Test
 //	void CreateBell() throws IOException {
 //		byte[] image = Files.readAllBytes(Paths.get("C:\\JavaProjects\\Logo.jpg\\"));
 //		Temple t = Temple.builder()
@@ -96,7 +101,7 @@ class ZvonTests {
 //				.phone("+800")
 //				.image(image)
 //				.build();
-//		templeService.create(t);
+//		templeService.create(new TempleDto(t));
 //		BellTower tw1 = BellTower.builder()
 //				.title("tower bell1Bell")
 //				.temple(t)
@@ -106,9 +111,9 @@ class ZvonTests {
 //				.temple(t)
 //				.build();
 //
-//		bellTowerService.create(tw1);
+//		bellTowerService.create(new BellTowerDto(tw1));
 //
-//		bellTowerService.create(tw2);
+//		bellTowerService.create(new BellTowerDto(tw2));
 //
 //		Bell b1 = Bell.builder()
 //				.title("bell1")
@@ -138,9 +143,9 @@ class ZvonTests {
 //				.status(BellStatus.Accepted)
 //				.build();
 //
-//		Bell res1 = bellService.create(b1);
-//		Bell res2 = bellService.create(b2);
-//		Bell res3 = bellService.create(b3);
+//		Bell res1 = bellService.create(new BellDto(b1));
+//		Bell res2 = bellService.create(new BellDto(b2));
+//		Bell res3 = bellService.create(new BellDto(b3));
 //
 //		Assertions.assertNotNull(res1.getId());
 //		Assertions.assertNotNull(res2.getId());
@@ -697,4 +702,65 @@ class ZvonTests {
 //
 //
 //	}
+
+    @Test
+    void CreateNotice() throws IOException {
+        byte[] image = Files.readAllBytes(Paths.get("C:\\JavaProjects\\Logo.jpg\\"));
+        Temple t = Temple.builder()
+                .title("templeBell")
+                .description("desc")
+                .address("ulsty")
+                .phone("+800")
+                .image(image)
+                .build();
+        templeService.create(new TempleDto(t));
+        BellTower tw1 = BellTower.builder()
+                .title("tower bell1Bell")
+                .temple(t)
+                .build();
+        BellTower tw2 = BellTower.builder()
+                .title("tower bell2Bell")
+                .temple(t)
+                .build();
+
+        bellTowerService.create(new BellTowerDto(tw1));
+
+        bellTowerService.create(new BellTowerDto(tw2));
+
+        Bell b1 = Bell.builder()
+                .title("bell1")
+                .manufacturer("man")
+                .weight(100)
+                .image(image)
+                .sound(image)
+                .bellTower(tw1)
+                .status(BellStatus.Accepted)
+                .build();
+        Bell b2 = Bell.builder()
+                .title("bell2")
+                .manufacturer("man")
+                .weight(100)
+                .image(image)
+                .sound(image)
+                .bellTower(tw1)
+                .status(BellStatus.Accepted)
+                .build();
+        Bell b3 = Bell.builder()
+                .title("bell3")
+                .manufacturer("man")
+                .weight(100)
+                .image(image)
+                .sound(image)
+                .bellTower(tw2)
+                .status(BellStatus.Accepted)
+                .build();
+
+        Bell res1 = bellService.create(new BellDto(b1));
+        Bell res2 = bellService.create(new BellDto(b2));
+        Bell res3 = bellService.create(new BellDto(b3));
+
+        Assertions.assertNotNull(res1.getId());
+        Assertions.assertNotNull(res2.getId());
+        Assertions.assertNotNull(res3.getId());
+    }
 }

@@ -41,6 +41,8 @@ public class NoticeDto {
 
     private String user ;
 
+    private String temple ;
+
     private String email;
 
     public NoticeDto(Notice notice)
@@ -56,6 +58,7 @@ public class NoticeDto {
         this.date = notice.getDate().toString();
         this.bell = notice.getBell().getId().toString();
         this.user = notice.getUser().getId().toString();
+        this.temple = notice.getTemple().getId().toString();
         this.email = notice.getUser().getEmail();
     }
 }

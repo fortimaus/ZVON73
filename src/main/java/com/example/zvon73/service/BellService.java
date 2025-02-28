@@ -45,7 +45,7 @@ public class BellService {
     @Transactional(readOnly = true)
     public Bell findById(UUID id){
         return bellRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Колокола с данным id не найден"));
+                .orElse(null);
     }
     private void validate(BellDto bell){
         if(bell.getTitle().isEmpty() || bell.getTitle().length() < 5 || bell.getTitle().length() >100)

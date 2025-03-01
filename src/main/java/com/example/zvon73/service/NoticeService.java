@@ -64,7 +64,9 @@ public class NoticeService {
         curNotice.setImage(noticeDto.getImage());
         curNotice.setDescription(noticeDto.getDescription());
         Bell curBell = bellService.findById(UUID.fromString(noticeDto.getBell()));
+        Temple curTemple = templeService.findById(UUID.fromString(noticeDto.getTemple()));
         curNotice.setBell(curBell);
+        curNotice.setTemple(curTemple);
         return noticeRepository.save(curNotice);
     }
     @Transactional
@@ -76,10 +78,6 @@ public class NoticeService {
         }catch (Exception e){
             return new MessageResponse("", e.getMessage());
         }
-    }
-    @Transactional(readOnly = true)
-    public List<NoticeDto> findAll(){
-        return noticeRepository.findAll().stream().map(NoticeDto::new).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)

@@ -31,15 +31,14 @@ public class Bell {
     @Column(name = "weight", nullable = false)
     private int weight;
 
+    @Column(name = "diameter", nullable = false)
+    private int diameter;
+
     @Column(name = "image", columnDefinition="bytea", nullable = false)
     private byte[] image ;
 
     @Column(name = "sound", columnDefinition="bytea", nullable = false)
     private byte[] sound ;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status",nullable = false)
-    private BellStatus status ;
 
     @ManyToOne
     @JoinColumn(name = "bell_towerId", nullable = false)

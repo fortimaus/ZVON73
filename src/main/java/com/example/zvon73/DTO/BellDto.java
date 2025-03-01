@@ -24,9 +24,8 @@ public class BellDto {
 
     private byte[] sound ;
 
-    private String status ;
-
     private String bellTowerName;
+
     private String bellTowerId;
 
     public BellDto(Bell bell){
@@ -36,7 +35,6 @@ public class BellDto {
         this.weight = bell.getWeight();
         this.image = bell.getImage();
         this.sound = bell.getSound();
-        this.status = bell.getStatus().toString();
         this.bellTowerName = bell.getBellTower().getTitle();
         this.bellTowerId = bell.getBellTower().getId().toString();
     }

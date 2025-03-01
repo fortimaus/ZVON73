@@ -29,8 +29,8 @@ public class TempleController {
         return ResponseEntity.ok(templeService.findListByName(name));
     }
     @GetMapping("/operator")
-    public ResponseEntity<TempleDto> getTempleByUser(){
-        return ResponseEntity.ok(new TempleDto(templeService.findByUser()));
+    public ResponseEntity<List<TempleDto>> getTempleByUser(){
+        return ResponseEntity.ok(templeService.findByUser());
     }
     @GetMapping
     public ResponseEntity<TempleDto> get(@RequestParam("id") String id){
@@ -39,10 +39,6 @@ public class TempleController {
     @PostMapping("/create")
     public ResponseEntity<TempleDto> createTemple(@RequestBody TempleDto templeDto){
         return ResponseEntity.ok(new TempleDto(templeService.create(templeDto)));
-    }
-    @PutMapping("/change-operator")
-    public ResponseEntity<MessageResponse> changeOperator(@RequestBody TempleOperatorRequest request){
-        return ResponseEntity.ok(templeService.updateOperator(request));
     }
 
     @PutMapping("/edit")

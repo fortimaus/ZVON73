@@ -26,7 +26,6 @@ public class BellService {
     @Transactional
     public Bell create(BellDto bell)
     {
-        validate(bell);
 
         BellTower bellTower = bellTowerService.findById(UUID.fromString(bell.getBellTowerId()));
 
@@ -37,7 +36,6 @@ public class BellService {
                 .image(bell.getImage())
                 .sound(bell.getSound())
                 .bellTower(bellTower)
-                .status(BellStatus.Accepted)
                 .build();
         return bellRepository.save(newBell);
     }
@@ -66,7 +64,6 @@ public class BellService {
     public Bell update(BellDto newBell)
     {
         Bell currentBell = findById(UUID.fromString(newBell.getId()));
-        validate(newBell);
             if( !currentBell.getTitle().equals(newBell.getTitle()) )
                 currentBell.setTitle(newBell.getTitle());
 
@@ -115,17 +112,5 @@ public class BellService {
         return bellRepository.findListByName('%'+name+'%').stream().map(BellDto::new).collect(Collectors.toList());
     }
 
-    @Transactional
-    public Bell updateStatusAccepted(UUID id){
-        Bell currentBell = findById(id);
-        currentBell.setStatus(BellStatus.Accepted);
-        return bellRepository.save(currentBell);
-    }
 
-    @Transactional
-    public Bell updateStatusInPath(UUID id){
-        Bell currentBell = findById(id);
-        currentBell.setStatus(BellStatus.In_path);
-        return bellRepository.save(currentBell);
-    }
 }

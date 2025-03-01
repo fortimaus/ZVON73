@@ -36,7 +36,6 @@ public class BellTowerService {
     @Transactional
     public BellTower create(BellTowerDto bellTower)
     {
-        validate(bellTower);
         Temple temple = templeService.findById(UUID.fromString(bellTower.getTempleId()));
         BellTower newBellTower = BellTower.builder()
                 .title(bellTower.getTitle())
@@ -54,7 +53,7 @@ public class BellTowerService {
     @Transactional
     public BellTower update(BellTowerDto newBellTower)
     {
-        validate(newBellTower);
+
         BellTower currentBellTower = findById(UUID.fromString(newBellTower.getId()));
 
             if( !currentBellTower.getTitle().equals(newBellTower.getTitle()) )

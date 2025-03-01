@@ -3,6 +3,7 @@ package com.example.zvon73.service;
 import com.example.zvon73.DTO.UserDto;
 import com.example.zvon73.controller.domain.MessageResponse;
 import com.example.zvon73.controller.domain.RoleRequest;
+import com.example.zvon73.controller.domain.TempleOperatorRequest;
 import com.example.zvon73.controller.domain.VerifyRequest;
 import com.example.zvon73.entity.Enums.Role;
 import com.example.zvon73.entity.Temple;
@@ -17,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -58,19 +61,41 @@ public class UserService {
         try{
             User updateUser = findById(UUID.fromString(request.getUser()));
             Role newRole = Role.valueOf(request.getRole());
-            updateUser.setRole(newRole);
-            if(!request.getTemple().isEmpty()){
-
-                Temple oldTemple = templeRepository.findByUser(updateUser);
-                if(oldTemple != null)
-                {
-                    oldTemple.setUser(null);
-                    templeRepository.save(oldTemple);
-                }
-                Temple newTemple = templeRepository.findById(UUID.fromString(request.getTemple())).orElseThrow();
-                newTemple.setUser(updateUser);
-                templeRepository.save(newTemple);
+            if(updateUser.getRole() == Role.RINGER && (newRole != Role.RINGER || request.getTemples().isEmpty()) )
+            {
+                List<Temple> userTemples = templeRepository.findTemplesByRingersId(updateUser.getId());
+                for (Temple temple : userTemples)
+                    temple.deleteRinger(updateUser);
+                templeRepository.saveAll(userTemples);
             }
+            if(newRole == Role.RINGER && !request.getTemples().isEmpty()){
+                List<Temple> userTemples = templeRepository.findTemplesByRingersId(updateUser.getId());
+                if(userTemples == null )
+                    userTemples = new ArrayList<>();
+                List<Temple> newUserTemples = new ArrayList<>();
+                List<Temple> updatedTemples = new ArrayList<>();
+
+                for(String newTempleId : request.getTemples()){
+                    newUserTemples.add(templeRepository.findById(UUID.fromString(newTempleId))
+                            .orElseThrow(() -> new NullPointerException("Такого храма нет")));
+                }
+
+                for(Temple userTemple : userTemples){
+                    if(!newUserTemples.contains(userTemple))
+                        userTemple.deleteRinger(updateUser);
+                    updatedTemples.add(userTemple);
+                }
+
+                for(Temple userTemple : newUserTemples){
+                    if(!userTemples.contains(userTemple))
+                        userTemple.addRinger(updateUser);
+                    updatedTemples.add(userTemple);
+                }
+
+                templeRepository.saveAll(updatedTemples);
+            }
+
+            updateUser.setRole(newRole);
             userRepository.save(updateUser);
             return new MessageResponse("Роль изменена", "");
         }catch (Exception ex)

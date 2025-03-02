@@ -1,0 +1,33 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-record_table
+      author: ghost
+      changes:
+        - createTable:
+            tableName: user_records
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(200)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: record
+                  type: bytea
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    foreignKeyName: user_records_fk
+                    referencedTableName: users
+                    referencedColumnNames: id
+                    nullable: false

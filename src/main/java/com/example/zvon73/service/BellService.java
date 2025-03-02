@@ -26,7 +26,7 @@ public class BellService {
     @Transactional
     public Bell create(BellDto bell)
     {
-        validate(bell);
+
 
         BellTower bellTower = bellTowerService.findById(UUID.fromString(bell.getBellTowerId()));
 
@@ -45,7 +45,7 @@ public class BellService {
     @Transactional(readOnly = true)
     public Bell findById(UUID id){
         return bellRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Колокола с данным id не найден"));
+                .orElse(null);
     }
     private void validate(BellDto bell){
         if(bell.getTitle().isEmpty() || bell.getTitle().length() < 5 || bell.getTitle().length() >100)
@@ -66,7 +66,7 @@ public class BellService {
     public Bell update(BellDto newBell)
     {
         Bell currentBell = findById(UUID.fromString(newBell.getId()));
-        validate(newBell);
+
             if( !currentBell.getTitle().equals(newBell.getTitle()) )
                 currentBell.setTitle(newBell.getTitle());
 

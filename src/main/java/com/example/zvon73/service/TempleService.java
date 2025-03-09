@@ -48,7 +48,6 @@ public class TempleService {
                 .phone(temple.getPhone())
                 .description(temple.getDescription())
                 .image(temple.getImage())
-                .user(null)
                 .build();
         return templeRepository.save(newTemple);
     }
@@ -104,38 +103,17 @@ public class TempleService {
     }
 
     @Transactional(readOnly = true)
-    public Temple findByUser(){
+    public List<TempleDto> findByUser(){
         User currentUser = userService.getCurrentUser();
-        return templeRepository.findByUser(currentUser);
+        return templeRepository.findTemplesByRingersId(currentUser.getId()).stream().map(TempleDto::new).collect(Collectors.toList());
 
     }
 
     @Transactional(readOnly = true)
-    public Temple findByUser(User user){
-        return templeRepository.findByUser(user);
+    public List<TempleDto> findByUser(User user){
+        return templeRepository.findTemplesByRingersId(user.getId()).stream().map(TempleDto::new).collect(Collectors.toList());
 
-    }
+  }
 
-    @Transactional
-    public MessageResponse updateOperator(TempleOperatorRequest request){
-        try {
-            User currentUser = userService.findById(UUID.fromString(request.getUser()));
-            Temple currentTemple = findById(UUID.fromString(request.getTemple()));
-            if (currentTemple.getUser() == null || !currentTemple.getUser().equals(currentUser))
-            {
-                Temple userTemple = findByUser(currentUser);
-                if(userTemple != null)
-                {
-                    userTemple.setUser(null);
-                    templeRepository.save(userTemple);
-                }
-                currentTemple.setUser(currentUser);
-            }
 
-            templeRepository.save(currentTemple);
-            return new MessageResponse("Оператор изменён", "");
-        }catch (Exception e){
-            return new MessageResponse("", e.getMessage());
-        }
-    }
 }

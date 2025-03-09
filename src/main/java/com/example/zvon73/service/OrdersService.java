@@ -30,7 +30,7 @@ public class OrdersService {
     {
         User curUser = userService.getCurrentUser();
         Temple templeStart = templeService.findById(UUID.fromString(order.getTemple_start()));
-        if(curUser.getId() == templeStart.getUser().getId()) {
+        if(templeStart.getRingers().contains(curUser)) {
             Temple templeEnd = templeService.findById(UUID.fromString(order.getTemple_end()));
             BellTower bellTowerStart = bellTowerService.findById(UUID.fromString(order.getBellTower_start()));
             Bell bell = bellService.findById(UUID.fromString(order.getBell()));
@@ -78,7 +78,7 @@ public class OrdersService {
     public Order updateStatusOnModeration(OrderRequest request){
         User curUser = userService.getCurrentUser();
         Order currentOrder = findById(UUID.fromString(request.getOrder()));
-        if (curUser.getId() == currentOrder.getTemple_end().getUser().getId()) {
+        if (currentOrder.getTemple_end().getRingers().contains(curUser)) {
             currentOrder.setStatus(OrderStatus.Waiting_moderator);
             return orderRepository.save(currentOrder);
 
@@ -98,7 +98,6 @@ public class OrdersService {
     public Order updateStatusOnPath(OrderRequest request){
         Order currentOrder = findById(UUID.fromString(request.getOrder()));
         currentOrder.setStatus(OrderStatus.In_path);
-        bellService.updateStatusInPath(currentOrder.getBell().getId());
         return orderRepository.save(currentOrder);
     }
 
@@ -107,7 +106,6 @@ public class OrdersService {
         Order currentOrder = findById(UUID.fromString(request.getOrder()));
         currentOrder.setStatus(OrderStatus.Finished);
         currentOrder.setDate(new Date());
-        bellService.updateStatusAccepted(currentOrder.getBell().getId());
         return orderRepository.save(currentOrder);
     }
 
@@ -115,7 +113,6 @@ public class OrdersService {
     public Order updateStatusOnCancelled(OrderRequest request){
         Order currentOrder = findById(UUID.fromString(request.getOrder()));
         currentOrder.setStatus(OrderStatus.Cancelled);
-        bellService.updateStatusAccepted(currentOrder.getBell().getId());
         return orderRepository.save(currentOrder);
     }
 }

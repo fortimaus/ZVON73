@@ -36,7 +36,6 @@ public class BellTowerService {
     @Transactional
     public BellTower create(BellTowerDto bellTower)
     {
-
         Temple temple = templeService.findById(UUID.fromString(bellTower.getTempleId()));
         BellTower newBellTower = BellTower.builder()
                 .title(bellTower.getTitle())

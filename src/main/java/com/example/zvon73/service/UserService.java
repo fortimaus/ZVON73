@@ -110,6 +110,10 @@ public class UserService {
                 .orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден"));
 
     }
+    public User findByEmail(String email){
+        var user = userRepository.findByEmail(email);
+        return user.orElse(null);
+    }
     public UserDetailsService userDetailsService() {
         return this::getByEmail;
     }

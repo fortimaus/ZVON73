@@ -39,7 +39,7 @@ public class AuthenticationService {
 
         try {
             var checkUser = userService.getByEmail(request.getEmail());
-            if(checkUser.getRole() == Role.NOT_CONFIRMED){
+            if(checkUser != null && checkUser.getRole() == Role.NOT_CONFIRMED){
                 userService.deleteUser(checkUser);
             }
             var user = User.builder()

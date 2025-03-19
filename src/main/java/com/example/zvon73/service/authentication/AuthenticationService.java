@@ -38,7 +38,7 @@ public class AuthenticationService {
     public MessageResponse signUp(SignUpRequest request) {
 
         try {
-            var checkUser = userService.getByEmail(request.getEmail());
+            var checkUser = userService.findByEmail(request.getEmail());
             if(checkUser != null && checkUser.getRole() == Role.NOT_CONFIRMED){
                 userService.deleteUser(checkUser);
             }

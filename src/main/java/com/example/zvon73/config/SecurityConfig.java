@@ -1,5 +1,6 @@
 package com.example.zvon73.config;
 
+import com.example.zvon73.entity.Enums.Role;
 import com.example.zvon73.service.UserService;
 import com.example.zvon73.service.authentication.AuthenticationFilter;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
@@ -51,6 +52,7 @@ public class SecurityConfig {
                 }))
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/admin/**").hasAuthority(Role.ADMIN.toString())
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/webjars/**", "/swagger-resources/**").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))

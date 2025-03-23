@@ -11,6 +11,8 @@ import com.example.zvon73.entity.User;
 import com.example.zvon73.repository.TempleRepository;
 import com.example.zvon73.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -22,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -41,6 +44,10 @@ public class UserService {
             throw new RuntimeException("Пользователь с таким именем уже существует");
         }
         return save(user);
+    }
+    public List<UserDto> getUserListForAdmin(PageRequest request){
+        Page<User> userPage = userRepository.findAll(request);
+        return userPage.getContent().stream().map(UserDto::new).collect(Collectors.toList());
     }
     @Transactional
     public User update(UserDto userDto){

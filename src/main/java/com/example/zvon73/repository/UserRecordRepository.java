@@ -11,5 +11,4 @@ import java.util.List;
 import java.util.UUID;
 
 public interface UserRecordRepository extends JpaRepository<UserRecord, UUID> {
-    Page<UserRecord> findAll(Pageable pageable);
 }

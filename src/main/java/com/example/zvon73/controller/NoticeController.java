@@ -16,7 +16,7 @@ import java.util.UUID;
 import static com.example.zvon73.config.SecurityConfig.SECURITY_CONFIG_NAME;
 
 @RestController
-@RequestMapping("/notice")
+@RequestMapping("/api/notice")
 @RequiredArgsConstructor
 @SecurityRequirement(name = SECURITY_CONFIG_NAME)
 public class NoticeController {

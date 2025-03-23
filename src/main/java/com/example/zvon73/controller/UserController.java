@@ -15,7 +15,7 @@ import java.util.UUID;
 import static com.example.zvon73.config.SecurityConfig.SECURITY_CONFIG_NAME;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 @RequiredArgsConstructor
 @SecurityRequirement(name = SECURITY_CONFIG_NAME)
 public class UserController {

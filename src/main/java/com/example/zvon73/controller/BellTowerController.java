@@ -14,7 +14,7 @@ import java.util.UUID;
 import static com.example.zvon73.config.SecurityConfig.SECURITY_CONFIG_NAME;
 
 @RestController
-@RequestMapping("/bell-tower")
+@RequestMapping("/api/bell-tower")
 @RequiredArgsConstructor
 @SecurityRequirement(name = SECURITY_CONFIG_NAME)
 public class BellTowerController {

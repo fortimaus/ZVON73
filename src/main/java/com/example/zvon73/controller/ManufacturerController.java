@@ -22,7 +22,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/manufacturer")
+@RequestMapping("/api/manufacturer")
 @RequiredArgsConstructor
 @SecurityRequirement(name = SECURITY_CONFIG_NAME)
 public class ManufacturerController {

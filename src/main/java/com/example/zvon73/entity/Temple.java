@@ -68,4 +68,16 @@ public class Temple {
             }
         }
     }
+
+    public boolean checkRinger(UUID id){
+        if(ringers == null)
+            return false;
+
+        for(User ringer : ringers)
+        {
+            if(ringer.getId().equals(id))
+                return true;
+        }
+        return false;
+    }
 }

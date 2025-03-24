@@ -40,6 +40,9 @@ public class Bell {
     @Column(name = "sound", columnDefinition="bytea", nullable = false)
     private byte[] sound ;
 
+    @Column(name = "canned", nullable = false)
+    private boolean canned = false;
+
     @ManyToOne
     @JoinColumn(name = "bell_towerId", nullable = false)
     private BellTower bellTower ;

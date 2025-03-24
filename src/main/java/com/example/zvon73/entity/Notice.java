@@ -50,9 +50,6 @@ public class Notice {
     @Column(name = "date")
     private Date date ;
 
-    @ManyToOne
-    @JoinColumn(name = "bellId", nullable = true)
-    private Bell bell ;
 
     @ManyToOne
     @JoinColumn(name = "userId", nullable = false)

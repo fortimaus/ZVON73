@@ -2,7 +2,9 @@ package com.example.zvon73.service;
 
 import com.example.zvon73.DTO.ManufacturerDto;
 import com.example.zvon73.controller.domain.MessageResponse;
+import com.example.zvon73.entity.Enums.Role;
 import com.example.zvon73.entity.Manufacturer;
+import com.example.zvon73.entity.User;
 import com.example.zvon73.repository.ManufacturerRepository;
 import com.example.zvon73.service.Exceptions.ValidateException;
 import lombok.RequiredArgsConstructor;
@@ -19,19 +21,22 @@ import java.util.stream.Collectors;
 public class ManufacturerService {
 
     private final ManufacturerRepository manufacturerRepository;
+    private final UserService userService;
 
-    private void validate(ManufacturerDto manufacturer) {
-        if (manufacturer.getTitle() == null || manufacturer.getTitle().isEmpty() || manufacturer.getTitle().length() < 3 || manufacturer.getTitle().length() > 100)
-            throw new ValidateException("Некорректное название производителя");
-        if (manufacturer.getAddress() == null || manufacturer.getAddress().isEmpty() || manufacturer.getAddress().length() < 5 || manufacturer.getAddress().length() > 200)
-            throw new ValidateException("Некорректный адрес производителя");
-        if (manufacturer.getPhone() == null || manufacturer.getPhone().isEmpty() || manufacturer.getPhone().length() != 12)
-            throw new ValidateException("Некорректный телефон производителя");
+    private boolean checkUser()
+    {
+        User currentUser = userService.getCurrentUser();
+        return currentUser.getRole().equals(Role.ADMIN);
     }
 
     @Transactional
     public Manufacturer create(ManufacturerDto manufacturerDto) {
-        validate(manufacturerDto);
+
+
+
+        if(!checkUser())
+            throw new RuntimeException("Not access");
+
         Manufacturer newManufacturer = Manufacturer.builder()
                 .title(manufacturerDto.getTitle())
                 .address(manufacturerDto.getAddress())
@@ -55,7 +60,10 @@ public class ManufacturerService {
 
     @Transactional
     public Manufacturer update(ManufacturerDto manufacturerDto) {
-        validate(manufacturerDto);
+
+        if(!checkUser())
+            throw new RuntimeException("Not access");
+
         Manufacturer currentManufacturer = findById(UUID.fromString(manufacturerDto.getId()));
         if (!currentManufacturer.getTitle().equals(manufacturerDto.getTitle()))
             currentManufacturer.setTitle(manufacturerDto.getTitle());
@@ -69,6 +77,9 @@ public class ManufacturerService {
     @Transactional
     public MessageResponse delete(UUID id) {
         try {
+            if(!checkUser())
+                throw new RuntimeException("Not access");
+
             Manufacturer currentManufacturer = findById(id);
             manufacturerRepository.delete(currentManufacturer);
             return new MessageResponse("Производитель успешно удален", "");

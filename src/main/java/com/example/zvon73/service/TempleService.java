@@ -4,6 +4,7 @@ import com.example.zvon73.DTO.TempleDto;
 import com.example.zvon73.controller.domain.MessageResponse;
 import com.example.zvon73.controller.domain.TempleOperatorRequest;
 import com.example.zvon73.entity.Bell;
+import com.example.zvon73.entity.Enums.Role;
 import com.example.zvon73.entity.Temple;
 import com.example.zvon73.entity.User;
 import com.example.zvon73.repository.TempleRepository;
@@ -26,22 +27,21 @@ public class TempleService {
     private final TempleRepository templeRepository;
     private final UserService userService;
 
-    private void validate(TempleDto temple){
-        if(temple.getTitle().isEmpty() || temple.getTitle().length() < 5 || temple.getTitle().length() >100)
-            throw new ValidateException("Некорректное название храма");
-        if(temple.getAddress().isEmpty() || temple.getAddress().length() < 5 || temple.getAddress().length() > 100)
-            throw new ValidateException("Некорректный адрес храма");
-        if(temple.getPhone().isEmpty() || temple.getPhone().length() > 12 || temple.getPhone().length() < 11 )
-            throw new ValidateException("Некорректный телефон храма");
-        if(temple.getDescription().isEmpty())
-            throw new ValidateException("Некорректное описание храма");
-        if(temple.getImage().length == 0)
-            throw new ValidateException("Некорректное изображение храма");
+    private boolean checkAdmin(){
+        User currentUser = userService.getCurrentUser();
+        return currentUser.getRole().equals(Role.ADMIN);
     }
+    private boolean checkRinger(Temple temple){
+        User currentUser = userService.getCurrentUser();
+        return temple.checkRinger(currentUser.getId());
+    }
+
 
     @Transactional
     public Temple create(TempleDto temple)
     {
+        if(!checkAdmin())
+            throw new RuntimeException("403: Not access");
         Temple newTemple = Temple.builder()
                 .title(temple.getTitle())
                 .address(temple.getAddress())

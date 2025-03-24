@@ -37,11 +37,11 @@ public class NoticeDto {
     private String  date ;
 
 
-    private String bell ;
-
     private String user ;
 
     private String temple ;
+
+    private String templeName ;
 
     private String email;
 
@@ -56,9 +56,9 @@ public class NoticeDto {
         this.description = notice.getDescription();
         this.type = notice.getType().toString();
         this.date = notice.getDate().toString();
-        this.bell = notice.getBell().getId().toString();
         this.user = notice.getUser().getId().toString();
         this.temple = notice.getTemple().getId().toString();
+        this.templeName = notice.getTemple().getTitle();
         this.email = notice.getUser().getEmail();
     }
 }

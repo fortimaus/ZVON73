@@ -48,4 +48,8 @@ public class BellController {
     public ResponseEntity<MessageResponse> delete(@RequestParam("id") String id){
         return ResponseEntity.ok(bellService.delete(UUID.fromString(id)));
     }
+    @DeleteMapping("/preserve")
+    public ResponseEntity<MessageResponse> preserve(@RequestParam("id") String id){
+        return ResponseEntity.ok(bellService.madeCanned(UUID.fromString(id)));
+    }
 }

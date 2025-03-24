@@ -18,4 +18,6 @@ public interface BellRepository extends JpaRepository<Bell, UUID> {
     List<Bell> findByTempleId(@Param("value") UUID id);
     @Query("SELECT b FROM Bell b WHERE TRIM(LOWER(b.title)) LIKE TRIM(LOWER(:name))")
     List<Bell> findListByName(String name);
+
+    List<Bell> findByCannedFalse();
 }

@@ -5,6 +5,7 @@ import com.example.zvon73.controller.domain.MessageResponse;
 import com.example.zvon73.entity.Bell;
 import com.example.zvon73.entity.BellTower;
 import com.example.zvon73.entity.Temple;
+import com.example.zvon73.entity.User;
 import com.example.zvon73.repository.BellTowerRepository;
 import com.example.zvon73.repository.TempleRepository;
 import com.example.zvon73.repository.UserRepository;
@@ -25,18 +26,18 @@ public class BellTowerService {
 
     private final BellTowerRepository bellTowerRepository;
     private final TempleService templeService;
-
-    private void validate(BellTowerDto bellTower){
-        if(bellTower.getTitle().isEmpty() || bellTower.getTitle().length() < 5 || bellTower.getTitle().length() >100)
-            throw new ValidateException("Некорректное название колокольни");
-        if(bellTower.getTempleId().toString().isEmpty())
-            throw new ValidateException("Некорректной номер храма колокольни");
-    }
+    private final UserService userService;
 
     @Transactional
     public BellTower create(BellTowerDto bellTower)
     {
+
         Temple temple = templeService.findById(UUID.fromString(bellTower.getTempleId()));
+
+        User currentUser = userService.getCurrentUser();
+        if(!temple.checkRinger(currentUser.getId()))
+            throw new RuntimeException("403 : Not access");
+
         BellTower newBellTower = BellTower.builder()
                 .title(bellTower.getTitle())
                 .temple(temple)
@@ -56,13 +57,16 @@ public class BellTowerService {
 
         BellTower currentBellTower = findById(UUID.fromString(newBellTower.getId()));
 
-            if( !currentBellTower.getTitle().equals(newBellTower.getTitle()) )
-                currentBellTower.setTitle(newBellTower.getTitle());
+        User currentUser = userService.getCurrentUser();
+        if(!currentBellTower.getTemple().checkRinger(currentUser.getId()))
+            throw new RuntimeException("403 : Not access");
 
-            if( !currentBellTower.getTemple().equals(UUID.fromString(newBellTower.getTempleId())) ) {
-                Temple newTemple = templeService.findById(UUID.fromString(newBellTower.getTempleId()));
-                currentBellTower.setTemple(newTemple);
-            }
+        if( !currentBellTower.getTitle().equals(newBellTower.getTitle()) )
+            currentBellTower.setTitle(newBellTower.getTitle());
+        if( !currentBellTower.getTemple().getId().equals(UUID.fromString(newBellTower.getTempleId())) ) {
+            Temple newTemple = templeService.findById(UUID.fromString(newBellTower.getTempleId()));
+            currentBellTower.setTemple(newTemple);
+        }
 
 
         return bellTowerRepository.save(currentBellTower);
@@ -72,6 +76,11 @@ public class BellTowerService {
     public MessageResponse delete(UUID id){
         try {
             BellTower currentBellTower = findById(id);
+
+            User currentUser = userService.getCurrentUser();
+            if(!currentBellTower.getTemple().checkRinger(currentUser.getId()))
+                throw new RuntimeException("Not access");
+
             bellTowerRepository.delete(currentBellTower);
             return new MessageResponse("Колокольня успешно удалена", "");
         }catch (Exception e){

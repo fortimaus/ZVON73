@@ -33,13 +33,13 @@ public class NoticeService {
     }
 
     @Transactional
-    public Notice create(NoticeDto noticeDto){
+    public NoticeDto create(NoticeDto noticeDto){
 
         User curUser = userService.getCurrentUser();
         Temple curTemple = templeService.findById(UUID.fromString(noticeDto.getTemple()));
 
         if(!checkUser(curTemple))
-            throw new RuntimeException("403 : Not access");
+            return new NoticeDto();
 
         Notice notice = Notice.builder()
                 .title(noticeDto.getTitle())
@@ -54,15 +54,15 @@ public class NoticeService {
                 .temple(curTemple)
                 .build();
 
-        return noticeRepository.save(notice);
+        return new NoticeDto(noticeRepository.save(notice));
     }
     @Transactional(readOnly = true)
     public Notice findById(UUID id){
         return noticeRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Заявка с данным id не найдена"));
+                .orElse(new Notice());
     }
     @Transactional
-    public Notice update(NoticeDto noticeDto)
+    public NoticeDto update(NoticeDto noticeDto)
     {
 
         Notice curNotice = findById(UUID.fromString(noticeDto.getId()));
@@ -70,7 +70,7 @@ public class NoticeService {
         Temple curTemple = templeService.findById(UUID.fromString(noticeDto.getTemple()));
 
         if(!checkUser(curTemple) || !checkUser(curNotice.getTemple()))
-            throw new RuntimeException("403 : Not access");
+            return new NoticeDto();
 
         curNotice.setTitle(noticeDto.getTitle());
         curNotice.setManufacturer(noticeDto.getManufacturer());
@@ -80,7 +80,7 @@ public class NoticeService {
         curNotice.setDescription(noticeDto.getDescription());
 
         curNotice.setTemple(curTemple);
-        return noticeRepository.save(curNotice);
+        return new NoticeDto(noticeRepository.save(curNotice));
     }
     @Transactional
     public MessageResponse delete(UUID id){
@@ -89,7 +89,7 @@ public class NoticeService {
 
             User currentUser = userService.getCurrentUser();
             if(!currentUser.getId().equals(currentNotice.getUser().getId()) || !currentUser.getRole().equals(Role.ADMIN))
-                throw new RuntimeException("403 : Not access");
+                return new MessageResponse("", "Not Access");
 
             noticeRepository.delete(currentNotice);
             return new MessageResponse("Заявка успешно удалёна", "");

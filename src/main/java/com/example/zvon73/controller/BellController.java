@@ -24,13 +24,7 @@ public class BellController {
     private final BellService bellService;
     @GetMapping
     public ResponseEntity<BellDto> get(@RequestParam("id") String id){
-        try {
-            return ResponseEntity.ok(new BellDto(bellService.findById(UUID.fromString(id))));
-        }catch (Exception e)
-        {
-            return new ResponseEntity<BellDto>(new BellDto(),HttpStatus.BAD_REQUEST);
-        }
-
+        return ResponseEntity.ok(new BellDto(bellService.findById(UUID.fromString(id))));
     }
     @GetMapping("/list")
     public ResponseEntity<List<BellDto>> getFullList(){
@@ -46,23 +40,11 @@ public class BellController {
     }
     @PostMapping("/create")
     public ResponseEntity<BellDto> create(@RequestBody BellDto bellDto){
-        try
-        {
-            return ResponseEntity.ok(new BellDto(bellService.create(bellDto)));
-        }catch (Exception e)
-        {
-            return new ResponseEntity<>(new BellDto(), HttpStatus.BAD_REQUEST);
-        }
-
+        return ResponseEntity.ok((bellService.create(bellDto)));
     }
     @PutMapping("/edit")
     public ResponseEntity<BellDto> edit(@RequestBody BellDto bellDto){
-        try {
-            return ResponseEntity.ok(new BellDto(bellService.update(bellDto)));
-        }catch (Exception e)
-        {
-            return new ResponseEntity<>(new BellDto(), HttpStatus.BAD_REQUEST);
-        }
+        return ResponseEntity.ok(bellService.update(bellDto));
     }
     @DeleteMapping("/delete")
     public ResponseEntity<MessageResponse> delete(@RequestParam("id") String id){

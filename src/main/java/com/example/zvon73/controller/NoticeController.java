@@ -26,12 +26,8 @@ public class NoticeController {
 
     @GetMapping
     public ResponseEntity<NoticeDto> get(@RequestParam("id") String id){
-        try {
-            return ResponseEntity.ok(new NoticeDto(noticeService.findById(UUID.fromString(id))));
-        }catch (Exception e)
-        {
-            return new ResponseEntity<>(new NoticeDto(), HttpStatus.BAD_REQUEST);
-        }
+        return ResponseEntity.ok(new NoticeDto(noticeService.findById(UUID.fromString(id))));
+
     }
     @GetMapping("/list_take")
     public ResponseEntity<List<NoticeDto>> getTakeList(){
@@ -47,21 +43,11 @@ public class NoticeController {
     }
     @PostMapping("/create")
     public ResponseEntity<NoticeDto> create(@RequestBody NoticeDto noticeDto){
-        try{
-            return ResponseEntity.ok(new NoticeDto(noticeService.create(noticeDto)));
-        }catch (Exception e)
-        {
-            return new ResponseEntity<>(new NoticeDto(), HttpStatus.BAD_REQUEST);
-        }
+        return ResponseEntity.ok(noticeService.create(noticeDto));
     }
     @PutMapping("/edit")
     public ResponseEntity<NoticeDto> edit(@RequestBody NoticeDto noticeDto){
-        try {
-            return ResponseEntity.ok(new NoticeDto(noticeService.update(noticeDto)));
-        }catch (Exception e)
-        {
-            return new ResponseEntity<>(new NoticeDto(), HttpStatus.BAD_REQUEST);
-        }
+        return ResponseEntity.ok(noticeService.update(noticeDto));
     }
     @DeleteMapping("/delete")
     public ResponseEntity<MessageResponse> delete(@RequestParam("id") String id){

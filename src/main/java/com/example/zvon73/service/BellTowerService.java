@@ -35,35 +35,35 @@ public class BellTowerService {
     }
 
     @Transactional
-    public BellTower create(BellTowerDto bellTower)
+    public BellTowerDto create(BellTowerDto bellTower)
     {
 
         Temple temple = templeService.findById(UUID.fromString(bellTower.getTempleId()));
 
         if(!checkUser(temple))
-            throw new RuntimeException("403 : Not access");
+            return new BellTowerDto();
 
         BellTower newBellTower = BellTower.builder()
                 .title(bellTower.getTitle())
                 .temple(temple)
                 .build();
-        return bellTowerRepository.save(newBellTower);
+        return new BellTowerDto(bellTowerRepository.save(newBellTower));
     }
 
     @Transactional(readOnly = true)
     public BellTower findById(UUID id){
         return bellTowerRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Колокольня с данным id не найден"));
+                .orElse(new BellTower());
     }
 
     @Transactional
-    public BellTower update(BellTowerDto newBellTower)
+    public BellTowerDto update(BellTowerDto newBellTower)
     {
 
         BellTower currentBellTower = findById(UUID.fromString(newBellTower.getId()));
 
         if(!checkUser(currentBellTower.getTemple()))
-            throw new RuntimeException("403 : Not access");
+            return new BellTowerDto();
 
         if( !currentBellTower.getTitle().equals(newBellTower.getTitle()) )
             currentBellTower.setTitle(newBellTower.getTitle());
@@ -73,7 +73,7 @@ public class BellTowerService {
         }
 
 
-        return bellTowerRepository.save(currentBellTower);
+        return new BellTowerDto(bellTowerRepository.save(currentBellTower));
     }
 
     @Transactional
@@ -82,7 +82,7 @@ public class BellTowerService {
             BellTower currentBellTower = findById(id);
 
             if(!checkUser(currentBellTower.getTemple()))
-                throw new RuntimeException("Not access");
+                return new MessageResponse("", "Not Access");
 
             bellTowerRepository.delete(currentBellTower);
             return new MessageResponse("Колокольня успешно удалена", "");

@@ -43,32 +43,18 @@ public class ManufacturerController {
 
     @GetMapping
     public ResponseEntity<ManufacturerDto> getManufacturerById(@RequestParam("id") String id) {
-        try {
-            return ResponseEntity.ok(new ManufacturerDto(manufacturerService.findById(UUID.fromString(id))));
-        }catch (Exception e)
-        {
-            return new ResponseEntity<>(new ManufacturerDto(), HttpStatus.BAD_REQUEST);
-        }
+        return ResponseEntity.ok(new ManufacturerDto(manufacturerService.findById(UUID.fromString(id))));
     }
 
     @PostMapping("/create")
     public ResponseEntity<ManufacturerDto> createManufacturer(@RequestBody ManufacturerDto manufacturerDto) {
-        try {
-            return ResponseEntity.ok(new ManufacturerDto(manufacturerService.create(manufacturerDto)));
-        }catch (Exception e)
-        {
-            return new ResponseEntity<>(new ManufacturerDto(), HttpStatus.BAD_REQUEST);
-        }
+        return ResponseEntity.ok(manufacturerService.create(manufacturerDto));
+
     }
 
     @PutMapping("/edit")
     public ResponseEntity<ManufacturerDto> editManufacturer(@RequestBody ManufacturerDto manufacturerDto) {
-        try {
-            return ResponseEntity.ok(new ManufacturerDto(manufacturerService.update(manufacturerDto)));
-        }catch (Exception e)
-        {
-            return new ResponseEntity<>(new ManufacturerDto(), HttpStatus.BAD_REQUEST);
-        }
+        return ResponseEntity.ok(manufacturerService.update(manufacturerDto));
     }
 
     @DeleteMapping("/delete")

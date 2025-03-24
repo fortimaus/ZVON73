@@ -36,32 +36,16 @@ public class TempleController {
     }
     @GetMapping
     public ResponseEntity<TempleDto> get(@RequestParam("id") String id){
-        try {
-            return ResponseEntity.ok(new TempleDto(templeService.findById(UUID.fromString(id))));
-        }
-        catch (Exception e)
-        {
-            return new ResponseEntity<>(new TempleDto(), HttpStatus.BAD_REQUEST);
-        }
+        return ResponseEntity.ok(new TempleDto(templeService.findById(UUID.fromString(id))));
     }
     @PostMapping("/create")
     public ResponseEntity<TempleDto> createTemple(@RequestBody TempleDto templeDto){
-        try {
-            return ResponseEntity.ok(new TempleDto(templeService.create(templeDto)));
-        }catch (Exception e)
-        {
-            return new ResponseEntity<>(new TempleDto(), HttpStatus.BAD_REQUEST);
-        }
+        return ResponseEntity.ok(templeService.create(templeDto));
     }
 
     @PutMapping("/edit")
     public ResponseEntity<TempleDto> editTemple(@RequestBody TempleDto templeDto){
-        try {
-            return ResponseEntity.ok(new TempleDto(templeService.update(templeDto)));
-        }catch (Exception e)
-        {
-            return new ResponseEntity<>(new TempleDto(), HttpStatus.BAD_REQUEST);
-        }
+        return ResponseEntity.ok(templeService.update(templeDto));
     }
     @DeleteMapping("/delete")
     public ResponseEntity<MessageResponse> deleteTemple(@RequestParam("id") String id){

@@ -38,10 +38,10 @@ public class TempleService {
 
 
     @Transactional
-    public Temple create(TempleDto temple)
+    public TempleDto create(TempleDto temple)
     {
         if(!checkAdmin())
-            throw new RuntimeException("403: Not access");
+            return new TempleDto();
         Temple newTemple = Temple.builder()
                 .title(temple.getTitle())
                 .address(temple.getAddress())
@@ -49,22 +49,22 @@ public class TempleService {
                 .description(temple.getDescription())
                 .image(temple.getImage())
                 .build();
-        return templeRepository.save(newTemple);
+        return new TempleDto(templeRepository.save(newTemple));
     }
 
     @Transactional(readOnly = true)
     public Temple findById(UUID id){
         return templeRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Храм с данным id не найден"));
+                .orElse(new Temple());
     }
 
     @Transactional
-    public Temple update(TempleDto newTemple)
+    public TempleDto update(TempleDto newTemple)
     {
 
         Temple currentTemple = findById(UUID.fromString(newTemple.getId()));
         if(!checkAdmin() || !checkRinger(currentTemple))
-            throw new RuntimeException("403: Not access");
+            return new TempleDto();
 
         if( !currentTemple.getAddress().equals(newTemple.getAddress()) )
             currentTemple.setAddress(newTemple.getAddress());
@@ -76,7 +76,7 @@ public class TempleService {
             currentTemple.setDescription(newTemple.getDescription());
 
 
-        return templeRepository.save(currentTemple);
+        return new TempleDto(templeRepository.save(currentTemple));
     }
 
     @Transactional
@@ -85,7 +85,7 @@ public class TempleService {
             Temple currentTemple = findById(id);
 
             if(!checkAdmin() || !checkRinger(currentTemple))
-                throw new RuntimeException("403: Not access");
+                return new MessageResponse("", "Not Access");
 
             templeRepository.delete(currentTemple);
             return new MessageResponse("Храм успешно удален", "");

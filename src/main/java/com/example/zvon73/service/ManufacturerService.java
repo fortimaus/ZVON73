@@ -30,25 +30,23 @@ public class ManufacturerService {
     }
 
     @Transactional
-    public Manufacturer create(ManufacturerDto manufacturerDto) {
-
-
+    public ManufacturerDto create(ManufacturerDto manufacturerDto) {
 
         if(!checkUser())
-            throw new RuntimeException("Not access");
+            return new ManufacturerDto();
 
         Manufacturer newManufacturer = Manufacturer.builder()
                 .title(manufacturerDto.getTitle())
                 .address(manufacturerDto.getAddress())
                 .phone(manufacturerDto.getPhone())
                 .build();
-        return manufacturerRepository.save(newManufacturer);
+        return new ManufacturerDto(manufacturerRepository.save(newManufacturer));
     }
 
     @Transactional(readOnly = true)
     public Manufacturer findById(UUID id) {
         return manufacturerRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Производитель с данным id не найден"));
+                .orElse(new Manufacturer());
     }
 
     @Transactional(readOnly = true)
@@ -59,10 +57,10 @@ public class ManufacturerService {
     }
 
     @Transactional
-    public Manufacturer update(ManufacturerDto manufacturerDto) {
+    public ManufacturerDto update(ManufacturerDto manufacturerDto) {
 
         if(!checkUser())
-            throw new RuntimeException("Not access");
+            return new ManufacturerDto();
 
         Manufacturer currentManufacturer = findById(UUID.fromString(manufacturerDto.getId()));
         if (!currentManufacturer.getTitle().equals(manufacturerDto.getTitle()))
@@ -71,14 +69,14 @@ public class ManufacturerService {
             currentManufacturer.setAddress(manufacturerDto.getAddress());
         if (!currentManufacturer.getPhone().equals(manufacturerDto.getPhone()))
             currentManufacturer.setPhone(manufacturerDto.getPhone());
-        return manufacturerRepository.save(currentManufacturer);
+        return new ManufacturerDto(manufacturerRepository.save(currentManufacturer));
     }
 
     @Transactional
     public MessageResponse delete(UUID id) {
         try {
             if(!checkUser())
-                throw new RuntimeException("Not access");
+                return new MessageResponse("", "Not Access");
 
             Manufacturer currentManufacturer = findById(id);
             manufacturerRepository.delete(currentManufacturer);

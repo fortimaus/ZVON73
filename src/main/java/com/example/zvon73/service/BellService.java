@@ -34,12 +34,12 @@ public class BellService {
     }
 
     @Transactional
-    public Bell create(BellDto bell)
+    public BellDto create(BellDto bell)
     {
         BellTower bellTower = bellTowerService.findById(UUID.fromString(bell.getBellTowerId()));
 
         if(!checkUser(bellTower.getTemple()))
-            throw new RuntimeException("403 : Not access");
+            return new BellDto();
 
         Bell newBell = Bell.builder()
                 .title(bell.getTitle())
@@ -49,23 +49,22 @@ public class BellService {
                 .sound(bell.getSound())
                 .bellTower(bellTower)
                 .build();
-        return bellRepository.save(newBell);
+        return new BellDto(bellRepository.save(newBell));
     }
 
     @Transactional(readOnly = true)
     public Bell findById(UUID id){
-        return bellRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Колокола с данным id не найден"));
+        return bellRepository.findById(id).orElse(new Bell());
     }
 
 
     @Transactional
-    public Bell update(BellDto newBell)
+    public BellDto update(BellDto newBell)
     {
         Bell currentBell = findById(UUID.fromString(newBell.getId()));
 
         if(!checkUser(currentBell.getBellTower().getTemple()))
-            throw new RuntimeException("403 : Not access");
+            return new BellDto();
 
         if( !currentBell.getTitle().equals(newBell.getTitle()) )
             currentBell.setTitle(newBell.getTitle());
@@ -82,7 +81,7 @@ public class BellService {
             }
 
 
-        return bellRepository.save(currentBell);
+        return new BellDto(bellRepository.save(currentBell));
     }
 
     @Transactional

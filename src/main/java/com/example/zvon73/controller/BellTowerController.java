@@ -24,12 +24,7 @@ public class BellTowerController {
 
     @GetMapping
     public ResponseEntity<BellTowerDto> get(@RequestParam("id") String id){
-        try {
-            return ResponseEntity.ok(new BellTowerDto(bellTowerService.findById(UUID.fromString(id))));
-        }catch (Exception e)
-        {
-            return new ResponseEntity<>(new BellTowerDto(), HttpStatus.BAD_REQUEST);
-        }
+        return ResponseEntity.ok(new BellTowerDto(bellTowerService.findById(UUID.fromString(id))));
     }
     @GetMapping("/list")
     public ResponseEntity<List<BellTowerDto>> getFullList(){
@@ -45,21 +40,12 @@ public class BellTowerController {
     }
     @PostMapping("/create")
     public ResponseEntity<BellTowerDto> create(@RequestBody BellTowerDto bellTowerDto){
-        try {
-            return ResponseEntity.ok(new BellTowerDto(bellTowerService.create(bellTowerDto)));
-        }catch (Exception e)
-        {
-            return new ResponseEntity<>(new BellTowerDto(), HttpStatus.BAD_REQUEST);
-        }
+        return ResponseEntity.ok(bellTowerService.create(bellTowerDto));
+
     }
     @PutMapping("/edit")
     public ResponseEntity<BellTowerDto> edit(@RequestBody BellTowerDto bellTowerDto){
-        try {
-            return ResponseEntity.ok(new BellTowerDto(bellTowerService.update(bellTowerDto)));
-        }catch (Exception e)
-        {
-            return new ResponseEntity<>(new BellTowerDto(), HttpStatus.BAD_REQUEST);
-        }
+        return ResponseEntity.ok(bellTowerService.update(bellTowerDto));
     }
     @DeleteMapping("/delete")
     public ResponseEntity<MessageResponse> delete(@RequestParam("id") String id){

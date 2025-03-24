@@ -22,6 +22,8 @@ public class BellDto {
 
     private byte[] image ;
 
+    private int diameter;
+
     private byte[] sound ;
 
     private String bellTowerName;
@@ -33,6 +35,7 @@ public class BellDto {
         this.title = bell.getTitle();
         this.manufacturer = bell.getManufacturer();
         this.weight = bell.getWeight();
+        this.diameter = bell.getDiameter();
         this.image = bell.getImage();
         this.sound = bell.getSound();
         this.bellTowerName = bell.getBellTower().getTitle();

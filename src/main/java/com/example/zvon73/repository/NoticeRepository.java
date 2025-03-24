@@ -13,7 +13,7 @@ import java.util.UUID;
 public interface NoticeRepository extends JpaRepository<Notice, UUID> {
 
     @Query(value = "Select n.* from notices n " +
-            "where n.userId = :value ", nativeQuery = true)
+            "where n.user_id = :value ", nativeQuery = true)
     List<Notice> findMyNotices(@Param("value") UUID id);
 
     List<Notice> findByType(TypeNotice typeNotice);

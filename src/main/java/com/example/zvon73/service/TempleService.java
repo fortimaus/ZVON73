@@ -63,21 +63,18 @@ public class TempleService {
     {
 
         Temple currentTemple = findById(UUID.fromString(newTemple.getId()));
+        if(!checkAdmin() || !checkRinger(currentTemple))
+            throw new RuntimeException("403: Not access");
 
-            if( !currentTemple.getAddress().equals(newTemple.getAddress()) )
-                currentTemple.setAddress(newTemple.getAddress());
+        if( !currentTemple.getAddress().equals(newTemple.getAddress()) )
+            currentTemple.setAddress(newTemple.getAddress());
+        if( !currentTemple.getPhone().equals(newTemple.getPhone()) )
+            currentTemple.setPhone(newTemple.getPhone());
+        if( !currentTemple.getTitle().equals(newTemple.getTitle()) )
+            currentTemple.setTitle(newTemple.getTitle());
+        if( !currentTemple.getDescription().equals(newTemple.getDescription()) )
+            currentTemple.setDescription(newTemple.getDescription());
 
-            if( !currentTemple.getPhone().equals(newTemple.getPhone()) )
-                currentTemple.setPhone(newTemple.getPhone());
-
-            if( !currentTemple.getTitle().equals(newTemple.getTitle()) )
-                currentTemple.setTitle(newTemple.getTitle());
-
-            if( !currentTemple.getDescription().equals(newTemple.getDescription()) )
-                currentTemple.setDescription(newTemple.getDescription());
-
-            if( Arrays.equals(currentTemple.getImage(), newTemple.getImage()) )
-                currentTemple.setImage(newTemple.getImage());
 
         return templeRepository.save(currentTemple);
     }
@@ -86,6 +83,10 @@ public class TempleService {
     public MessageResponse delete(UUID id){
         try {
             Temple currentTemple = findById(id);
+
+            if(!checkAdmin() || !checkRinger(currentTemple))
+                throw new RuntimeException("403: Not access");
+
             templeRepository.delete(currentTemple);
             return new MessageResponse("Храм успешно удален", "");
         }catch (Exception e){

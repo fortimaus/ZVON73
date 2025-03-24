@@ -5,6 +5,7 @@ import com.example.zvon73.controller.domain.MessageResponse;
 import com.example.zvon73.entity.Bell;
 import com.example.zvon73.entity.BellTower;
 import com.example.zvon73.entity.Enums.BellStatus;
+import com.example.zvon73.entity.Enums.Role;
 import com.example.zvon73.entity.Temple;
 import com.example.zvon73.entity.User;
 import com.example.zvon73.repository.BellRepository;
@@ -27,14 +28,17 @@ public class BellService {
     private final BellTowerService bellTowerService;
     private final UserService userService;
 
+    private boolean checkUser(Temple temple){
+        User currentUser = userService.getCurrentUser();
+        return temple.checkRinger(currentUser.getId()) || currentUser.getRole().equals(Role.ADMIN);
+    }
 
     @Transactional
     public Bell create(BellDto bell)
     {
-        User currentUser = userService.getCurrentUser();
         BellTower bellTower = bellTowerService.findById(UUID.fromString(bell.getBellTowerId()));
 
-        if(!bellTower.getTemple().checkRinger(currentUser.getId()))
+        if(!checkUser(bellTower.getTemple()))
             throw new RuntimeException("403 : Not access");
 
         Bell newBell = Bell.builder()
@@ -58,10 +62,9 @@ public class BellService {
     @Transactional
     public Bell update(BellDto newBell)
     {
-        User currentUser = userService.getCurrentUser();
         Bell currentBell = findById(UUID.fromString(newBell.getId()));
 
-        if(!currentBell.getBellTower().getTemple().checkRinger(currentUser.getId()))
+        if(!checkUser(currentBell.getBellTower().getTemple()))
             throw new RuntimeException("403 : Not access");
 
         if( !currentBell.getTitle().equals(newBell.getTitle()) )
@@ -85,10 +88,9 @@ public class BellService {
     @Transactional
     public MessageResponse madeCanned(UUID id){
         try {
-            User currentUser = userService.getCurrentUser();
             Bell currentBell = findById(id);
 
-            if(!currentBell.getBellTower().getTemple().checkRinger(currentUser.getId()))
+            if(!checkUser(currentBell.getBellTower().getTemple()))
                 return new MessageResponse("", "403 : Not access");
 
             currentBell.setCanned(true);
@@ -102,10 +104,9 @@ public class BellService {
     @Transactional
     public MessageResponse delete(UUID id){
         try {
-            User currentUser = userService.getCurrentUser();
             Bell currentBell = findById(id);
 
-            if(!currentBell.getBellTower().getTemple().checkRinger(currentUser.getId()))
+            if(!checkUser(currentBell.getBellTower().getTemple()))
                 return new MessageResponse("", "403 : Not access");
 
             bellRepository.delete(currentBell);

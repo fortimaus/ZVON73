@@ -29,7 +29,7 @@ public class NoticeService {
     private boolean checkUser(Temple temple)
     {
         User currentUser = userService.getCurrentUser();
-        return currentUser.getRole().equals(Role.RINGER) && temple.checkRinger(currentUser.getId());
+        return (currentUser.getRole().equals(Role.RINGER) && temple.checkRinger(currentUser.getId())) || currentUser.getRole().equals(Role.ADMIN);
     }
 
     @Transactional
@@ -59,12 +59,11 @@ public class NoticeService {
     @Transactional(readOnly = true)
     public Notice findById(UUID id){
         return noticeRepository.findById(id)
-                .orElse(null);
+                .orElseThrow(() -> new NotFoundException("Заявка с данным id не найдена"));
     }
     @Transactional
     public Notice update(NoticeDto noticeDto)
     {
-
 
         Notice curNotice = findById(UUID.fromString(noticeDto.getId()));
 
@@ -89,7 +88,7 @@ public class NoticeService {
             Notice currentNotice = findById(id);
 
             User currentUser = userService.getCurrentUser();
-            if(!currentUser.getId().equals(currentNotice.getUser().getId()))
+            if(!currentUser.getId().equals(currentNotice.getUser().getId()) || !currentUser.getRole().equals(Role.ADMIN))
                 throw new RuntimeException("403 : Not access");
 
             noticeRepository.delete(currentNotice);

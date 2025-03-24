@@ -1,11 +1,13 @@
 package com.example.zvon73.controller;
 
+import com.example.zvon73.DTO.NoticeDto;
 import com.example.zvon73.DTO.TempleDto;
 import com.example.zvon73.controller.domain.MessageResponse;
 import com.example.zvon73.controller.domain.TempleOperatorRequest;
 import com.example.zvon73.service.TempleService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,16 +36,32 @@ public class TempleController {
     }
     @GetMapping
     public ResponseEntity<TempleDto> get(@RequestParam("id") String id){
-        return ResponseEntity.ok(new TempleDto(templeService.findById(UUID.fromString(id))));
+        try {
+            return ResponseEntity.ok(new TempleDto(templeService.findById(UUID.fromString(id))));
+        }
+        catch (Exception e)
+        {
+            return new ResponseEntity<>(new TempleDto(), HttpStatus.BAD_REQUEST);
+        }
     }
     @PostMapping("/create")
     public ResponseEntity<TempleDto> createTemple(@RequestBody TempleDto templeDto){
-        return ResponseEntity.ok(new TempleDto(templeService.create(templeDto)));
+        try {
+            return ResponseEntity.ok(new TempleDto(templeService.create(templeDto)));
+        }catch (Exception e)
+        {
+            return new ResponseEntity<>(new TempleDto(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PutMapping("/edit")
     public ResponseEntity<TempleDto> editTemple(@RequestBody TempleDto templeDto){
-        return ResponseEntity.ok(new TempleDto(templeService.update(templeDto)));
+        try {
+            return ResponseEntity.ok(new TempleDto(templeService.update(templeDto)));
+        }catch (Exception e)
+        {
+            return new ResponseEntity<>(new TempleDto(), HttpStatus.BAD_REQUEST);
+        }
     }
     @DeleteMapping("/delete")
     public ResponseEntity<MessageResponse> deleteTemple(@RequestParam("id") String id){

@@ -3,9 +3,11 @@ package com.example.zvon73.controller;
 import com.example.zvon73.DTO.BellDto;
 import com.example.zvon73.DTO.BellTowerDto;
 import com.example.zvon73.controller.domain.MessageResponse;
+import com.example.zvon73.entity.Bell;
 import com.example.zvon73.service.BellService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +24,13 @@ public class BellController {
     private final BellService bellService;
     @GetMapping
     public ResponseEntity<BellDto> get(@RequestParam("id") String id){
-        return ResponseEntity.ok(new BellDto(bellService.findById(UUID.fromString(id))));
+        try {
+            return ResponseEntity.ok(new BellDto(bellService.findById(UUID.fromString(id))));
+        }catch (Exception e)
+        {
+            return new ResponseEntity<BellDto>(new BellDto(),HttpStatus.BAD_REQUEST);
+        }
+
     }
     @GetMapping("/list")
     public ResponseEntity<List<BellDto>> getFullList(){
@@ -38,15 +46,28 @@ public class BellController {
     }
     @PostMapping("/create")
     public ResponseEntity<BellDto> create(@RequestBody BellDto bellDto){
-        return ResponseEntity.ok(new BellDto(bellService.create(bellDto)));
+        try
+        {
+            return ResponseEntity.ok(new BellDto(bellService.create(bellDto)));
+        }catch (Exception e)
+        {
+            return new ResponseEntity<>(new BellDto(), HttpStatus.BAD_REQUEST);
+        }
+
     }
     @PutMapping("/edit")
     public ResponseEntity<BellDto> edit(@RequestBody BellDto bellDto){
-        return ResponseEntity.ok(new BellDto(bellService.update(bellDto)));
+        try {
+            return ResponseEntity.ok(new BellDto(bellService.update(bellDto)));
+        }catch (Exception e)
+        {
+            return new ResponseEntity<>(new BellDto(), HttpStatus.BAD_REQUEST);
+        }
     }
     @DeleteMapping("/delete")
     public ResponseEntity<MessageResponse> delete(@RequestParam("id") String id){
-        return ResponseEntity.ok(bellService.delete(UUID.fromString(id)));
+            return ResponseEntity.ok(bellService.delete(UUID.fromString(id)));
+
     }
     @DeleteMapping("/preserve")
     public ResponseEntity<MessageResponse> preserve(@RequestParam("id") String id){

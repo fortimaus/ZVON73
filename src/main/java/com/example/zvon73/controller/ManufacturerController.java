@@ -3,6 +3,8 @@ package com.example.zvon73.controller;
 import java.util.List;
 import java.util.UUID;
 
+import com.example.zvon73.DTO.BellTowerDto;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,17 +43,32 @@ public class ManufacturerController {
 
     @GetMapping
     public ResponseEntity<ManufacturerDto> getManufacturerById(@RequestParam("id") String id) {
-        return ResponseEntity.ok(new ManufacturerDto(manufacturerService.findById(UUID.fromString(id))));
+        try {
+            return ResponseEntity.ok(new ManufacturerDto(manufacturerService.findById(UUID.fromString(id))));
+        }catch (Exception e)
+        {
+            return new ResponseEntity<>(new ManufacturerDto(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PostMapping("/create")
     public ResponseEntity<ManufacturerDto> createManufacturer(@RequestBody ManufacturerDto manufacturerDto) {
-        return ResponseEntity.ok(new ManufacturerDto(manufacturerService.create(manufacturerDto)));
+        try {
+            return ResponseEntity.ok(new ManufacturerDto(manufacturerService.create(manufacturerDto)));
+        }catch (Exception e)
+        {
+            return new ResponseEntity<>(new ManufacturerDto(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PutMapping("/edit")
     public ResponseEntity<ManufacturerDto> editManufacturer(@RequestBody ManufacturerDto manufacturerDto) {
-        return ResponseEntity.ok(new ManufacturerDto(manufacturerService.update(manufacturerDto)));
+        try {
+            return ResponseEntity.ok(new ManufacturerDto(manufacturerService.update(manufacturerDto)));
+        }catch (Exception e)
+        {
+            return new ResponseEntity<>(new ManufacturerDto(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @DeleteMapping("/delete")

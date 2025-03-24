@@ -4,6 +4,7 @@ import com.example.zvon73.DTO.BellTowerDto;
 import com.example.zvon73.controller.domain.MessageResponse;
 import com.example.zvon73.entity.Bell;
 import com.example.zvon73.entity.BellTower;
+import com.example.zvon73.entity.Enums.Role;
 import com.example.zvon73.entity.Temple;
 import com.example.zvon73.entity.User;
 import com.example.zvon73.repository.BellTowerRepository;
@@ -28,14 +29,18 @@ public class BellTowerService {
     private final TempleService templeService;
     private final UserService userService;
 
+    private boolean checkUser(Temple temple){
+        User currentUser = userService.getCurrentUser();
+        return temple.checkRinger(currentUser.getId()) || currentUser.getRole().equals(Role.ADMIN);
+    }
+
     @Transactional
     public BellTower create(BellTowerDto bellTower)
     {
 
         Temple temple = templeService.findById(UUID.fromString(bellTower.getTempleId()));
 
-        User currentUser = userService.getCurrentUser();
-        if(!temple.checkRinger(currentUser.getId()))
+        if(!checkUser(temple))
             throw new RuntimeException("403 : Not access");
 
         BellTower newBellTower = BellTower.builder()
@@ -57,8 +62,7 @@ public class BellTowerService {
 
         BellTower currentBellTower = findById(UUID.fromString(newBellTower.getId()));
 
-        User currentUser = userService.getCurrentUser();
-        if(!currentBellTower.getTemple().checkRinger(currentUser.getId()))
+        if(!checkUser(currentBellTower.getTemple()))
             throw new RuntimeException("403 : Not access");
 
         if( !currentBellTower.getTitle().equals(newBellTower.getTitle()) )
@@ -77,8 +81,7 @@ public class BellTowerService {
         try {
             BellTower currentBellTower = findById(id);
 
-            User currentUser = userService.getCurrentUser();
-            if(!currentBellTower.getTemple().checkRinger(currentUser.getId()))
+            if(!checkUser(currentBellTower.getTemple()))
                 throw new RuntimeException("Not access");
 
             bellTowerRepository.delete(currentBellTower);

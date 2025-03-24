@@ -26,6 +26,8 @@ public class BellDto {
 
     private byte[] sound ;
 
+    private boolean canned;
+
     private String bellTowerName;
 
     private String bellTowerId;
@@ -36,6 +38,7 @@ public class BellDto {
         this.manufacturer = bell.getManufacturer();
         this.weight = bell.getWeight();
         this.image = bell.getImage();
+        this.canned = bell.isCanned();
         this.diameter = bell.getDiameter();
         this.sound = bell.getSound();
         this.bellTowerName = bell.getBellTower().getTitle();

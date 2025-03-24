@@ -16,15 +16,15 @@ public class BellDto {
 
     private String title ;
 
-    private String manufacturer ;
+    private String manufacturerId ;
+
+    private String manufacturerTitle ;
 
     private int diameter;
 
     private int weight;
 
     private byte[] image ;
-
-    private int diameter;
 
     private byte[] sound ;
 
@@ -37,9 +37,9 @@ public class BellDto {
     public BellDto(Bell bell){
         this.id = bell.getId().toString();
         this.title = bell.getTitle();
-        this.manufacturer = bell.getManufacturer();
+        this.manufacturerId = bell.getManufacturer().getId().toString();
+        this.manufacturerTitle = bell.getManufacturer().getTitle();
         this.weight = bell.getWeight();
-        this.diameter = bell.getDiameter();
         this.image = bell.getImage();
         this.canned = bell.isCanned();
         this.diameter = bell.getDiameter();

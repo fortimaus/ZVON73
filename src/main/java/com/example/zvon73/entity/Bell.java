@@ -24,8 +24,9 @@ public class Bell {
     @Column(name = "title", nullable = false)
     private String title ;
 
-    @Column(name = "manufacturer", nullable = false)
-    private String manufacturer ;
+    @ManyToOne
+    @JoinColumn(name = "manufacturerId", nullable = false)
+    private Manufacturer manufacturer ;
 
     @Column(name = "weight", nullable = false)
     private int weight;

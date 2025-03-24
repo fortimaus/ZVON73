@@ -2,12 +2,9 @@ package com.example.zvon73.service;
 
 import com.example.zvon73.DTO.BellDto;
 import com.example.zvon73.controller.domain.MessageResponse;
-import com.example.zvon73.entity.Bell;
-import com.example.zvon73.entity.BellTower;
+import com.example.zvon73.entity.*;
 import com.example.zvon73.entity.Enums.BellStatus;
 import com.example.zvon73.entity.Enums.Role;
-import com.example.zvon73.entity.Temple;
-import com.example.zvon73.entity.User;
 import com.example.zvon73.repository.BellRepository;
 import com.example.zvon73.service.Exceptions.ValidateException;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +23,7 @@ public class BellService {
 
     private final BellRepository bellRepository;
     private final BellTowerService bellTowerService;
+    private final ManufacturerService manufacturerService;
     private final UserService userService;
 
     private boolean checkUser(Temple temple){
@@ -37,14 +35,14 @@ public class BellService {
     public BellDto create(BellDto bell)
     {
         BellTower bellTower = bellTowerService.findById(UUID.fromString(bell.getBellTowerId()));
-
+        Manufacturer manufacturer = manufacturerService.findById(UUID.fromString(bell.getManufacturerId()));
         if(!checkUser(bellTower.getTemple()))
             return new BellDto();
 
         Bell newBell = Bell.builder()
                 .title(bell.getTitle())
                 .weight(bell.getWeight())
-                .manufacturer(bell.getManufacturer())
+                .manufacturer(manufacturer)
                 .image(bell.getImage())
                 .sound(bell.getSound())
                 .bellTower(bellTower)
@@ -72,8 +70,10 @@ public class BellService {
         if( !currentBell.getTitle().equals(newBell.getTitle()) )
             currentBell.setTitle(newBell.getTitle());
 
-        if( !currentBell.getManufacturer().equals(newBell.getManufacturer()) )
-            currentBell.setManufacturer(newBell.getManufacturer());
+        if( currentBell.getManufacturer().getId() != UUID.fromString(newBell.getManufacturerId()) ) {
+            Manufacturer manufacturer = manufacturerService.findById(UUID.fromString(newBell.getManufacturerId()));
+            currentBell.setManufacturer(manufacturer);
+        }
 
         if( currentBell.getWeight() != (newBell.getWeight()) )
             currentBell.setWeight(newBell.getWeight());

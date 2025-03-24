@@ -16,7 +16,7 @@ public interface BellRepository extends JpaRepository<Bell, UUID> {
             "JOIN bell_towers bt  on b.bell_tower_id = bt.id " +
             "where bt.temple_id = :value" , nativeQuery = true)
     List<Bell> findByTempleId(@Param("value") UUID id);
-    @Query("SELECT b FROM Bell b WHERE TRIM(LOWER(b.title)) LIKE TRIM(LOWER(:name))")
+    @Query("SELECT b FROM bells b WHERE TRIM(LOWER(b.title)) LIKE TRIM(LOWER(:name))")
     List<Bell> findListByName(String name);
 
     List<Bell> findByCannedFalse();

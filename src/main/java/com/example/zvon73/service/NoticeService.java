@@ -59,7 +59,7 @@ public class NoticeService {
     @Transactional(readOnly = true)
     public Notice findById(UUID id){
         return noticeRepository.findById(id)
-                .orElse(new Notice());
+                .orElse(null);
     }
     @Transactional
     public NoticeDto update(NoticeDto noticeDto)
@@ -67,6 +67,8 @@ public class NoticeService {
 
         Notice curNotice = findById(UUID.fromString(noticeDto.getId()));
 
+        if(curNotice == null)
+            return new NoticeDto();
         Temple curTemple = templeService.findById(UUID.fromString(noticeDto.getTemple()));
 
         if(!checkUser(curTemple) || !checkUser(curNotice.getTemple()))
@@ -86,7 +88,8 @@ public class NoticeService {
     public MessageResponse delete(UUID id){
         try {
             Notice currentNotice = findById(id);
-
+            if(currentNotice == null)
+                return new MessageResponse("", "Заявка не найдена");
             User currentUser = userService.getCurrentUser();
             if(!currentUser.getId().equals(currentNotice.getUser().getId()) || !currentUser.getRole().equals(Role.ADMIN))
                 return new MessageResponse("", "Not Access");

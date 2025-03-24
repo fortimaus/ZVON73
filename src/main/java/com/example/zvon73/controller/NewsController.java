@@ -32,7 +32,7 @@ public class NewsController {
     }
     @GetMapping
     public ResponseEntity<NewsDto> get(@RequestParam("id") String id){
-        return ResponseEntity.ok(newsService.getById(id));
+        return ResponseEntity.ok(new NewsDto(newsService.getById(id)));
     }
     @PostMapping("/create")
     public ResponseEntity<MessageResponse> createNews(@RequestBody NewsDto request){

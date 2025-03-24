@@ -17,7 +17,7 @@ public interface TempleRepository extends JpaRepository<Temple, UUID> {
             "where r.ringer_id = :value)", nativeQuery = true)
     List<Temple> findTemplesByRingersId(@Param("value") UUID user);
 
-    @Query("SELECT t FROM Temple t WHERE TRIM(LOWER(t.title)) LIKE TRIM(LOWER(:name))")
+    @Query("SELECT t FROM temples t WHERE TRIM(LOWER(t.title)) LIKE TRIM(LOWER(:name))")
     List<Temple> findListByName(String name);
 
 }

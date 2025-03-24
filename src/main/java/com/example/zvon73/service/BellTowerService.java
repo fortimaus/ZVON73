@@ -53,7 +53,7 @@ public class BellTowerService {
     @Transactional(readOnly = true)
     public BellTower findById(UUID id){
         return bellTowerRepository.findById(id)
-                .orElse(new BellTower());
+                .orElse(null);
     }
 
     @Transactional
@@ -61,6 +61,9 @@ public class BellTowerService {
     {
 
         BellTower currentBellTower = findById(UUID.fromString(newBellTower.getId()));
+
+        if(currentBellTower == null)
+            return new BellTowerDto();
 
         if(!checkUser(currentBellTower.getTemple()))
             return new BellTowerDto();
@@ -81,6 +84,8 @@ public class BellTowerService {
         try {
             BellTower currentBellTower = findById(id);
 
+            if(currentBellTower == null)
+                return new MessageResponse("", "Колокольня не найден");
             if(!checkUser(currentBellTower.getTemple()))
                 return new MessageResponse("", "Not Access");
 

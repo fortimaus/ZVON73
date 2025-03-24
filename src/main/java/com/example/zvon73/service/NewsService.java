@@ -26,11 +26,9 @@ public class NewsService {
         return newsPage.getContent().stream().map(NewsDto::new).collect(Collectors.toList());
     }
 
-    public NewsDto getById(String id){
-        News news = newsRepository.findById(UUID.fromString(id))
-                .orElseThrow(() -> new NotFoundException("Новость с данным id не найдена"));
-        return new NewsDto(news);
-    }
+    public News getById(String id){
+        return newsRepository.findById(UUID.fromString(id))
+                .orElse(null);}
 
     public MessageResponse create(NewsDto request) {
         try {
@@ -51,7 +49,11 @@ public class NewsService {
 
     public MessageResponse delete(NewsDto record){
         try {
-            newsRepository.deleteById(UUID.fromString(record.getId()));
+            News news = getById(record.getId());
+            if(news == null)
+                return new MessageResponse("", "Новость не найден");
+
+            newsRepository.delete(news);
             return new MessageResponse("Новость удалена", "");
         }catch (Exception e){
             return new MessageResponse("", e.getMessage());

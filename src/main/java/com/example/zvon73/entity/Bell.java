@@ -13,8 +13,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "bells")
+@Entity(name = "bells")
 public class Bell {
 
     @Id

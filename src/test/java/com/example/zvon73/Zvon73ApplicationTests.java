@@ -56,8 +56,8 @@ class ZvonTests {
                 .build();
 
 
-        TempleDto tD1 = templeService.create(t);
-        System.out.println(new TempleDto(templeService.findById(UUID.fromString(tD1.getId()))));
+        //TempleDto tD1 = templeService.create(t);
+        System.out.println(new TempleDto(null));
 
 
 

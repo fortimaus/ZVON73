@@ -46,7 +46,7 @@ public class ManufacturerService {
     @Transactional(readOnly = true)
     public Manufacturer findById(UUID id) {
         return manufacturerRepository.findById(id)
-                .orElse(new Manufacturer());
+                .orElse(null);
     }
 
     @Transactional(readOnly = true)
@@ -63,6 +63,10 @@ public class ManufacturerService {
             return new ManufacturerDto();
 
         Manufacturer currentManufacturer = findById(UUID.fromString(manufacturerDto.getId()));
+
+        if(currentManufacturer == null)
+            return new ManufacturerDto();
+
         if (!currentManufacturer.getTitle().equals(manufacturerDto.getTitle()))
             currentManufacturer.setTitle(manufacturerDto.getTitle());
         if (!currentManufacturer.getAddress().equals(manufacturerDto.getAddress()))
@@ -79,6 +83,10 @@ public class ManufacturerService {
                 return new MessageResponse("", "Not Access");
 
             Manufacturer currentManufacturer = findById(id);
+
+            if(currentManufacturer == null)
+                return new MessageResponse("", "Производитель не найден");
+
             manufacturerRepository.delete(currentManufacturer);
             return new MessageResponse("Производитель успешно удален", "");
         } catch (Exception e) {

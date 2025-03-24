@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public interface ManufacturerRepository extends JpaRepository<Manufacturer, UUID> {
 
-    @Query("SELECT t FROM Manufacturer t WHERE TRIM(LOWER(t.title)) LIKE TRIM(LOWER(:name))")
+    @Query("SELECT t FROM manufacturers t WHERE TRIM(LOWER(t.title)) LIKE TRIM(LOWER(:name))")
     List<Manufacturer> findListByTitle(String name);
 
     List<Manufacturer> findAllByIdNot(UUID id);

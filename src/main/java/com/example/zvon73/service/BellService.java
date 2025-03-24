@@ -54,7 +54,7 @@ public class BellService {
 
     @Transactional(readOnly = true)
     public Bell findById(UUID id){
-        return bellRepository.findById(id).orElse(new Bell());
+        return bellRepository.findById(id).orElse(null);
     }
 
 
@@ -62,6 +62,9 @@ public class BellService {
     public BellDto update(BellDto newBell)
     {
         Bell currentBell = findById(UUID.fromString(newBell.getId()));
+
+        if(currentBell == null)
+            return new BellDto();
 
         if(!checkUser(currentBell.getBellTower().getTemple()))
             return new BellDto();
@@ -89,6 +92,9 @@ public class BellService {
         try {
             Bell currentBell = findById(id);
 
+            if(currentBell == null)
+                return new MessageResponse("", "Колокол не найден");
+
             if(!checkUser(currentBell.getBellTower().getTemple()))
                 return new MessageResponse("", "403 : Not access");
 
@@ -101,9 +107,31 @@ public class BellService {
     }
 
     @Transactional
+    public MessageResponse recover(UUID id){
+        try {
+            Bell currentBell = findById(id);
+
+            if(currentBell == null)
+                return new MessageResponse("", "Колокол не найден");
+
+            if(!checkUser(currentBell.getBellTower().getTemple()))
+                return new MessageResponse("", "403 : Not access");
+
+            currentBell.setCanned(false);
+            bellRepository.save(currentBell);
+            return new MessageResponse("Колокол успешно списан", "");
+        }catch (Exception e){
+            return new MessageResponse("", e.getMessage());
+        }
+    }
+
+    @Transactional
     public MessageResponse delete(UUID id){
         try {
             Bell currentBell = findById(id);
+
+            if(currentBell == null)
+                return new MessageResponse("", "Колокол не найден");
 
             if(!checkUser(currentBell.getBellTower().getTemple()))
                 return new MessageResponse("", "403 : Not access");

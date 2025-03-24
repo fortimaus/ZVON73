@@ -55,7 +55,7 @@ public class TempleService {
     @Transactional(readOnly = true)
     public Temple findById(UUID id){
         return templeRepository.findById(id)
-                .orElse(new Temple());
+                .orElse(null);
     }
 
     @Transactional
@@ -63,6 +63,9 @@ public class TempleService {
     {
 
         Temple currentTemple = findById(UUID.fromString(newTemple.getId()));
+
+        if(currentTemple ==  null)
+            return new TempleDto();
         if(!checkAdmin() || !checkRinger(currentTemple))
             return new TempleDto();
 
@@ -83,7 +86,8 @@ public class TempleService {
     public MessageResponse delete(UUID id){
         try {
             Temple currentTemple = findById(id);
-
+            if(currentTemple ==  null)
+                return new MessageResponse("", "Храм не найден");
             if(!checkAdmin() || !checkRinger(currentTemple))
                 return new MessageResponse("", "Not Access");
 

@@ -5,6 +5,9 @@ import com.example.zvon73.controller.domain.MessageResponse;
 import com.example.zvon73.entity.Bell;
 import com.example.zvon73.entity.BellTower;
 import com.example.zvon73.entity.Enums.BellStatus;
+import com.example.zvon73.entity.Enums.Role;
+import com.example.zvon73.entity.Temple;
+import com.example.zvon73.entity.User;
 import com.example.zvon73.repository.BellRepository;
 import com.example.zvon73.service.Exceptions.ValidateException;
 import lombok.RequiredArgsConstructor;
@@ -23,11 +26,20 @@ public class BellService {
 
     private final BellRepository bellRepository;
     private final BellTowerService bellTowerService;
-    @Transactional
-    public Bell create(BellDto bell)
-    {
+    private final UserService userService;
 
+    private boolean checkUser(Temple temple){
+        User currentUser = userService.getCurrentUser();
+        return temple.checkRinger(currentUser.getId()) || currentUser.getRole().equals(Role.ADMIN);
+    }
+
+    @Transactional
+    public BellDto create(BellDto bell)
+    {
         BellTower bellTower = bellTowerService.findById(UUID.fromString(bell.getBellTowerId()));
+
+        if(!checkUser(bellTower.getTemple()))
+            return new BellDto();
 
         Bell newBell = Bell.builder()
                 .title(bell.getTitle())
@@ -37,60 +49,93 @@ public class BellService {
                 .sound(bell.getSound())
                 .bellTower(bellTower)
                 .build();
-        return bellRepository.save(newBell);
+        return new BellDto(bellRepository.save(newBell));
     }
 
     @Transactional(readOnly = true)
     public Bell findById(UUID id){
-        return bellRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Колокола с данным id не найден"));
+        return bellRepository.findById(id).orElse(null);
     }
-    private void validate(BellDto bell){
-        if(bell.getTitle().isEmpty() || bell.getTitle().length() < 5 || bell.getTitle().length() >100)
-            throw new ValidateException("Некорректное название колокола");
-        if(bell.getWeight() < 0)
-            throw new ValidateException("Некорректной вес колокола");
-        if(bell.getManufacturer().isEmpty() || bell.getManufacturer().length() < 3 || bell.getManufacturer().length() > 100)
-            throw new ValidateException("Некорректное название производителя");
-        if(bell.getImage().length == 0)
-            throw new ValidateException("Некорректное изображение колокола");
-        if(bell.getSound().length == 0)
-            throw new ValidateException("Некорректный звук колокола");
-        if(bell.getBellTowerId().toString().isEmpty())
-            throw new ValidateException("Некорректный номер колокольни");
+
+
+    @Transactional
+    public BellDto update(BellDto newBell)
+    {
+        Bell currentBell = findById(UUID.fromString(newBell.getId()));
+
+        if(currentBell == null)
+            return new BellDto();
+
+        if(!checkUser(currentBell.getBellTower().getTemple()))
+            return new BellDto();
+
+        if( !currentBell.getTitle().equals(newBell.getTitle()) )
+            currentBell.setTitle(newBell.getTitle());
+
+        if( !currentBell.getManufacturer().equals(newBell.getManufacturer()) )
+            currentBell.setManufacturer(newBell.getManufacturer());
+
+        if( currentBell.getWeight() != (newBell.getWeight()) )
+            currentBell.setWeight(newBell.getWeight());
+
+        if( currentBell.getBellTower().getId() != (UUID.fromString(newBell.getBellTowerId()))) {
+            BellTower newBellTower = bellTowerService.findById(UUID.fromString(newBell.getBellTowerId()));
+            currentBell.setBellTower(newBellTower);
+            }
+
+
+        return new BellDto(bellRepository.save(currentBell));
     }
 
     @Transactional
-    public Bell update(BellDto newBell)
-    {
-        Bell currentBell = findById(UUID.fromString(newBell.getId()));
-            if( !currentBell.getTitle().equals(newBell.getTitle()) )
-                currentBell.setTitle(newBell.getTitle());
+    public MessageResponse madeCanned(UUID id){
+        try {
+            Bell currentBell = findById(id);
 
-            if( !currentBell.getManufacturer().equals(newBell.getManufacturer()) )
-                currentBell.setManufacturer(newBell.getManufacturer());
+            if(currentBell == null)
+                return new MessageResponse("", "Колокол не найден");
 
-            if( currentBell.getWeight() != (newBell.getWeight()) )
-                currentBell.setWeight(newBell.getWeight());
+            if(!checkUser(currentBell.getBellTower().getTemple()))
+                return new MessageResponse("", "403 : Not access");
 
-            if( currentBell.getBellTower().getId() != (UUID.fromString(newBell.getBellTowerId()))) {
-                BellTower newBellTower = bellTowerService.findById(UUID.fromString(newBell.getBellTowerId()));
-                currentBell.setBellTower(newBellTower);
-            }
+            currentBell.setCanned(true);
+            bellRepository.save(currentBell);
+            return new MessageResponse("Колокол успешно списан", "");
+        }catch (Exception e){
+            return new MessageResponse("", e.getMessage());
+        }
+    }
 
-            if ( !Arrays.equals(currentBell.getSound(), newBell.getSound()) )
-                currentBell.setSound(newBell.getSound());
+    @Transactional
+    public MessageResponse recover(UUID id){
+        try {
+            Bell currentBell = findById(id);
 
-            if( !Arrays.equals(currentBell.getImage(), newBell.getImage()) )
-                currentBell.setImage(newBell.getImage());
+            if(currentBell == null)
+                return new MessageResponse("", "Колокол не найден");
 
-        return bellRepository.save(currentBell);
+            if(!checkUser(currentBell.getBellTower().getTemple()))
+                return new MessageResponse("", "403 : Not access");
+
+            currentBell.setCanned(false);
+            bellRepository.save(currentBell);
+            return new MessageResponse("Колокол успешно списан", "");
+        }catch (Exception e){
+            return new MessageResponse("", e.getMessage());
+        }
     }
 
     @Transactional
     public MessageResponse delete(UUID id){
         try {
             Bell currentBell = findById(id);
+
+            if(currentBell == null)
+                return new MessageResponse("", "Колокол не найден");
+
+            if(!checkUser(currentBell.getBellTower().getTemple()))
+                return new MessageResponse("", "403 : Not access");
+
             bellRepository.delete(currentBell);
             return new MessageResponse("Колокол успешно удалён", "");
         }catch (Exception e){
@@ -100,7 +145,7 @@ public class BellService {
 
     @Transactional(readOnly = true)
     public List<BellDto> findAll(){
-        return bellRepository.findAll().stream().map(BellDto::new).collect(Collectors.toList());
+        return bellRepository.findByCannedFalse().stream().map(BellDto::new).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)

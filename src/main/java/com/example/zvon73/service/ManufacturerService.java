@@ -2,7 +2,9 @@ package com.example.zvon73.service;
 
 import com.example.zvon73.DTO.ManufacturerDto;
 import com.example.zvon73.controller.domain.MessageResponse;
+import com.example.zvon73.entity.Enums.Role;
 import com.example.zvon73.entity.Manufacturer;
+import com.example.zvon73.entity.User;
 import com.example.zvon73.repository.ManufacturerRepository;
 import com.example.zvon73.service.Exceptions.ValidateException;
 import lombok.RequiredArgsConstructor;
@@ -19,31 +21,32 @@ import java.util.stream.Collectors;
 public class ManufacturerService {
 
     private final ManufacturerRepository manufacturerRepository;
+    private final UserService userService;
 
-    private void validate(ManufacturerDto manufacturer) {
-        if (manufacturer.getTitle() == null || manufacturer.getTitle().isEmpty() || manufacturer.getTitle().length() < 3 || manufacturer.getTitle().length() > 100)
-            throw new ValidateException("Некорректное название производителя");
-        if (manufacturer.getAddress() == null || manufacturer.getAddress().isEmpty() || manufacturer.getAddress().length() < 5 || manufacturer.getAddress().length() > 200)
-            throw new ValidateException("Некорректный адрес производителя");
-        if (manufacturer.getPhone() == null || manufacturer.getPhone().isEmpty() || manufacturer.getPhone().length() != 12)
-            throw new ValidateException("Некорректный телефон производителя");
+    private boolean checkUser()
+    {
+        User currentUser = userService.getCurrentUser();
+        return currentUser.getRole().equals(Role.ADMIN);
     }
 
     @Transactional
-    public Manufacturer create(ManufacturerDto manufacturerDto) {
-        validate(manufacturerDto);
+    public ManufacturerDto create(ManufacturerDto manufacturerDto) {
+
+        if(!checkUser())
+            return new ManufacturerDto();
+
         Manufacturer newManufacturer = Manufacturer.builder()
                 .title(manufacturerDto.getTitle())
                 .address(manufacturerDto.getAddress())
                 .phone(manufacturerDto.getPhone())
                 .build();
-        return manufacturerRepository.save(newManufacturer);
+        return new ManufacturerDto(manufacturerRepository.save(newManufacturer));
     }
 
     @Transactional(readOnly = true)
     public Manufacturer findById(UUID id) {
         return manufacturerRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Производитель с данным id не найден"));
+                .orElse(null);
     }
 
     @Transactional(readOnly = true)
@@ -54,22 +57,36 @@ public class ManufacturerService {
     }
 
     @Transactional
-    public Manufacturer update(ManufacturerDto manufacturerDto) {
-        validate(manufacturerDto);
+    public ManufacturerDto update(ManufacturerDto manufacturerDto) {
+
+        if(!checkUser())
+            return new ManufacturerDto();
+
         Manufacturer currentManufacturer = findById(UUID.fromString(manufacturerDto.getId()));
+
+        if(currentManufacturer == null)
+            return new ManufacturerDto();
+
         if (!currentManufacturer.getTitle().equals(manufacturerDto.getTitle()))
             currentManufacturer.setTitle(manufacturerDto.getTitle());
         if (!currentManufacturer.getAddress().equals(manufacturerDto.getAddress()))
             currentManufacturer.setAddress(manufacturerDto.getAddress());
         if (!currentManufacturer.getPhone().equals(manufacturerDto.getPhone()))
             currentManufacturer.setPhone(manufacturerDto.getPhone());
-        return manufacturerRepository.save(currentManufacturer);
+        return new ManufacturerDto(manufacturerRepository.save(currentManufacturer));
     }
 
     @Transactional
     public MessageResponse delete(UUID id) {
         try {
+            if(!checkUser())
+                return new MessageResponse("", "Not Access");
+
             Manufacturer currentManufacturer = findById(id);
+
+            if(currentManufacturer == null)
+                return new MessageResponse("", "Производитель не найден");
+
             manufacturerRepository.delete(currentManufacturer);
             return new MessageResponse("Производитель успешно удален", "");
         } catch (Exception e) {

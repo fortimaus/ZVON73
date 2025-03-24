@@ -5,6 +5,7 @@ import com.example.zvon73.DTO.NoticeDto;
 import com.example.zvon73.DTO.OrderDto;
 import com.example.zvon73.controller.domain.MessageResponse;
 import com.example.zvon73.entity.*;
+import com.example.zvon73.entity.Enums.Role;
 import com.example.zvon73.entity.Enums.TypeNotice;
 import com.example.zvon73.repository.NoticeRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,14 +24,23 @@ import java.util.stream.Collectors;
 public class NoticeService {
     private final NoticeRepository noticeRepository;
     private final UserService userService;
-    private final BellService bellService;
     private final TempleService templeService;
 
+    private boolean checkUser(Temple temple)
+    {
+        User currentUser = userService.getCurrentUser();
+        return (currentUser.getRole().equals(Role.RINGER) && temple.checkRinger(currentUser.getId())) || currentUser.getRole().equals(Role.ADMIN);
+    }
+
     @Transactional
-    public Notice create(NoticeDto noticeDto){
+    public NoticeDto create(NoticeDto noticeDto){
 
         User curUser = userService.getCurrentUser();
         Temple curTemple = templeService.findById(UUID.fromString(noticeDto.getTemple()));
+
+        if(!checkUser(curTemple))
+            return new NoticeDto();
+
         Notice notice = Notice.builder()
                 .title(noticeDto.getTitle())
                 .manufacturer(noticeDto.getManufacturer())
@@ -43,10 +53,8 @@ public class NoticeService {
                 .user(curUser)
                 .temple(curTemple)
                 .build();
-        Bell curBell = bellService.findById(UUID.fromString(noticeDto.getBell()));
-        if(curBell != null)
-            notice.setBell(curBell);
-        return noticeRepository.save(notice);
+
+        return new NoticeDto(noticeRepository.save(notice));
     }
     @Transactional(readOnly = true)
     public Notice findById(UUID id){
@@ -54,25 +62,38 @@ public class NoticeService {
                 .orElse(null);
     }
     @Transactional
-    public Notice update(NoticeDto noticeDto)
+    public NoticeDto update(NoticeDto noticeDto)
     {
+
         Notice curNotice = findById(UUID.fromString(noticeDto.getId()));
+
+        if(curNotice == null)
+            return new NoticeDto();
+        Temple curTemple = templeService.findById(UUID.fromString(noticeDto.getTemple()));
+
+        if(!checkUser(curTemple) || !checkUser(curNotice.getTemple()))
+            return new NoticeDto();
+
         curNotice.setTitle(noticeDto.getTitle());
         curNotice.setManufacturer(noticeDto.getManufacturer());
         curNotice.setWeight(noticeDto.getWeight());
         curNotice.setDiameter(noticeDto.getDiameter());
         curNotice.setImage(noticeDto.getImage());
         curNotice.setDescription(noticeDto.getDescription());
-        Bell curBell = bellService.findById(UUID.fromString(noticeDto.getBell()));
-        Temple curTemple = templeService.findById(UUID.fromString(noticeDto.getTemple()));
-        curNotice.setBell(curBell);
+
         curNotice.setTemple(curTemple);
-        return noticeRepository.save(curNotice);
+        return new NoticeDto(noticeRepository.save(curNotice));
     }
     @Transactional
     public MessageResponse delete(UUID id){
         try {
             Notice currentNotice = findById(id);
+            if(currentNotice == null)
+                return new MessageResponse("", "Заявка не найдена");
+            User currentUser = userService.getCurrentUser();
+            if(!currentUser.getId().equals(currentNotice.getUser().getId()) || !currentUser.getRole().equals(Role.ADMIN))
+                return new MessageResponse("", "Not Access");
+
             noticeRepository.delete(currentNotice);
             return new MessageResponse("Заявка успешно удалёна", "");
         }catch (Exception e){

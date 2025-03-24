@@ -15,8 +15,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "notices")
+@Entity(name = "notices")
 public class Notice {
 
     @Id
@@ -50,9 +49,6 @@ public class Notice {
     @Column(name = "date")
     private Date date ;
 
-    @ManyToOne
-    @JoinColumn(name = "bellId", nullable = true)
-    private Bell bell ;
 
     @ManyToOne
     @JoinColumn(name = "userId", nullable = false)

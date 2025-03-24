@@ -1,10 +1,12 @@
 package com.example.zvon73.controller;
 
+import com.example.zvon73.DTO.BellDto;
 import com.example.zvon73.DTO.BellTowerDto;
 import com.example.zvon73.controller.domain.MessageResponse;
 import com.example.zvon73.service.BellTowerService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,11 +40,12 @@ public class BellTowerController {
     }
     @PostMapping("/create")
     public ResponseEntity<BellTowerDto> create(@RequestBody BellTowerDto bellTowerDto){
-        return ResponseEntity.ok(new BellTowerDto(bellTowerService.create(bellTowerDto)));
+        return ResponseEntity.ok(bellTowerService.create(bellTowerDto));
+
     }
     @PutMapping("/edit")
     public ResponseEntity<BellTowerDto> edit(@RequestBody BellTowerDto bellTowerDto){
-        return ResponseEntity.ok(new BellTowerDto(bellTowerService.update(bellTowerDto)));
+        return ResponseEntity.ok(bellTowerService.update(bellTowerDto));
     }
     @DeleteMapping("/delete")
     public ResponseEntity<MessageResponse> delete(@RequestParam("id") String id){

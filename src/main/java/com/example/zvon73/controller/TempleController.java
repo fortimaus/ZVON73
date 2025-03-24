@@ -1,11 +1,13 @@
 package com.example.zvon73.controller;
 
+import com.example.zvon73.DTO.NoticeDto;
 import com.example.zvon73.DTO.TempleDto;
 import com.example.zvon73.controller.domain.MessageResponse;
 import com.example.zvon73.controller.domain.TempleOperatorRequest;
 import com.example.zvon73.service.TempleService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,12 +40,12 @@ public class TempleController {
     }
     @PostMapping("/create")
     public ResponseEntity<TempleDto> createTemple(@RequestBody TempleDto templeDto){
-        return ResponseEntity.ok(new TempleDto(templeService.create(templeDto)));
+        return ResponseEntity.ok(templeService.create(templeDto));
     }
 
     @PutMapping("/edit")
     public ResponseEntity<TempleDto> editTemple(@RequestBody TempleDto templeDto){
-        return ResponseEntity.ok(new TempleDto(templeService.update(templeDto)));
+        return ResponseEntity.ok(templeService.update(templeDto));
     }
     @DeleteMapping("/delete")
     public ResponseEntity<MessageResponse> deleteTemple(@RequestParam("id") String id){

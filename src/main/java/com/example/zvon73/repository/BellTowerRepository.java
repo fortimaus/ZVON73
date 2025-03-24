@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface BellTowerRepository extends JpaRepository<BellTower, UUID> {
-    @Query("SELECT bt FROM BellTower bt WHERE TRIM(LOWER(bt.title)) LIKE TRIM(LOWER(:name))")
+    @Query("SELECT bt FROM bell_towers bt WHERE TRIM(LOWER(bt.title)) LIKE TRIM(LOWER(:name))")
     List<BellTower> findListByName(String name);
     List<BellTower> findByTemple(Temple temple);
 }

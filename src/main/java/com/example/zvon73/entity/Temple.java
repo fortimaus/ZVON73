@@ -14,8 +14,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "temples")
+@Entity(name = "temples")
 public class Temple {
 
     @Id
@@ -67,5 +66,17 @@ public class Temple {
              return;
             }
         }
+    }
+
+    public boolean checkRinger(UUID id){
+        if(ringers == null)
+            return false;
+
+        for(User ringer : ringers)
+        {
+            if(ringer.getId().equals(id))
+                return true;
+        }
+        return false;
     }
 }

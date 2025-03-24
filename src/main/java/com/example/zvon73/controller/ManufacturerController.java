@@ -3,6 +3,8 @@ package com.example.zvon73.controller;
 import java.util.List;
 import java.util.UUID;
 
+import com.example.zvon73.DTO.BellTowerDto;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,12 +48,13 @@ public class ManufacturerController {
 
     @PostMapping("/create")
     public ResponseEntity<ManufacturerDto> createManufacturer(@RequestBody ManufacturerDto manufacturerDto) {
-        return ResponseEntity.ok(new ManufacturerDto(manufacturerService.create(manufacturerDto)));
+        return ResponseEntity.ok(manufacturerService.create(manufacturerDto));
+
     }
 
     @PutMapping("/edit")
     public ResponseEntity<ManufacturerDto> editManufacturer(@RequestBody ManufacturerDto manufacturerDto) {
-        return ResponseEntity.ok(new ManufacturerDto(manufacturerService.update(manufacturerDto)));
+        return ResponseEntity.ok(manufacturerService.update(manufacturerDto));
     }
 
     @DeleteMapping("/delete")

@@ -56,7 +56,7 @@ class ManufacturerServiceTest {
     void create_ValidData_Success() {
         when(manufacturerRepository.save(any(Manufacturer.class))).thenReturn(manufacturer);
 
-        Manufacturer createdManufacturer = manufacturerService.create(validManufacturerDto);
+        ManufacturerDto createdManufacturer = manufacturerService.create(validManufacturerDto);
 
         assertNotNull(createdManufacturer);
         assertEquals(validManufacturerDto.getTitle(), createdManufacturer.getTitle());
@@ -116,7 +116,7 @@ class ManufacturerServiceTest {
         when(manufacturerRepository.save(any(Manufacturer.class))).thenReturn(manufacturer);
 
         validManufacturerDto.setTitle("Новый тайтл");
-        Manufacturer updatedManufacturer = manufacturerService.update(validManufacturerDto);
+        ManufacturerDto updatedManufacturer = manufacturerService.update(validManufacturerDto);
 
         assertNotNull(updatedManufacturer);
         assertEquals("Новый тайтл", updatedManufacturer.getTitle());

@@ -13,8 +13,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "bells")
+@Entity(name = "bells")
 public class Bell {
 
     @Id
@@ -39,6 +38,9 @@ public class Bell {
 
     @Column(name = "sound", columnDefinition="bytea", nullable = false)
     private byte[] sound ;
+
+    @Column(name = "canned", nullable = false)
+    private boolean canned = false;
 
     @ManyToOne
     @JoinColumn(name = "bell_towerId", nullable = false)

@@ -4,7 +4,9 @@ import com.example.zvon73.DTO.BellTowerDto;
 import com.example.zvon73.controller.domain.MessageResponse;
 import com.example.zvon73.entity.Bell;
 import com.example.zvon73.entity.BellTower;
+import com.example.zvon73.entity.Enums.Role;
 import com.example.zvon73.entity.Temple;
+import com.example.zvon73.entity.User;
 import com.example.zvon73.repository.BellTowerRepository;
 import com.example.zvon73.repository.TempleRepository;
 import com.example.zvon73.repository.UserRepository;
@@ -25,53 +27,68 @@ public class BellTowerService {
 
     private final BellTowerRepository bellTowerRepository;
     private final TempleService templeService;
+    private final UserService userService;
 
-    private void validate(BellTowerDto bellTower){
-        if(bellTower.getTitle().isEmpty() || bellTower.getTitle().length() < 5 || bellTower.getTitle().length() >100)
-            throw new ValidateException("Некорректное название колокольни");
-        if(bellTower.getTempleId().toString().isEmpty())
-            throw new ValidateException("Некорректной номер храма колокольни");
+    private boolean checkUser(Temple temple){
+        User currentUser = userService.getCurrentUser();
+        return temple.checkRinger(currentUser.getId()) || currentUser.getRole().equals(Role.ADMIN);
     }
 
     @Transactional
-    public BellTower create(BellTowerDto bellTower)
+    public BellTowerDto create(BellTowerDto bellTower)
     {
+
         Temple temple = templeService.findById(UUID.fromString(bellTower.getTempleId()));
+
+        if(!checkUser(temple))
+            return new BellTowerDto();
+
         BellTower newBellTower = BellTower.builder()
                 .title(bellTower.getTitle())
                 .temple(temple)
                 .build();
-        return bellTowerRepository.save(newBellTower);
+        return new BellTowerDto(bellTowerRepository.save(newBellTower));
     }
 
     @Transactional(readOnly = true)
     public BellTower findById(UUID id){
         return bellTowerRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Колокольня с данным id не найден"));
+                .orElse(null);
     }
 
     @Transactional
-    public BellTower update(BellTowerDto newBellTower)
+    public BellTowerDto update(BellTowerDto newBellTower)
     {
 
         BellTower currentBellTower = findById(UUID.fromString(newBellTower.getId()));
 
-            if( !currentBellTower.getTitle().equals(newBellTower.getTitle()) )
-                currentBellTower.setTitle(newBellTower.getTitle());
+        if(currentBellTower == null)
+            return new BellTowerDto();
 
-            if( !currentBellTower.getTemple().equals(UUID.fromString(newBellTower.getTempleId())) ) {
-                Temple newTemple = templeService.findById(UUID.fromString(newBellTower.getTempleId()));
-                currentBellTower.setTemple(newTemple);
-            }
+        if(!checkUser(currentBellTower.getTemple()))
+            return new BellTowerDto();
+
+        if( !currentBellTower.getTitle().equals(newBellTower.getTitle()) )
+            currentBellTower.setTitle(newBellTower.getTitle());
+        if( !currentBellTower.getTemple().getId().equals(UUID.fromString(newBellTower.getTempleId())) ) {
+            Temple newTemple = templeService.findById(UUID.fromString(newBellTower.getTempleId()));
+            currentBellTower.setTemple(newTemple);
+        }
 
 
-        return bellTowerRepository.save(currentBellTower);
+        return new BellTowerDto(bellTowerRepository.save(currentBellTower));
     }
 
     @Transactional
     public MessageResponse delete(UUID id){
         try {
             BellTower currentBellTower = findById(id);
+
+            if(currentBellTower == null)
+                return new MessageResponse("", "Колокольня не найден");
+            if(!checkUser(currentBellTower.getTemple()))
+                return new MessageResponse("", "Not Access");
+
             bellTowerRepository.delete(currentBellTower);
             return new MessageResponse("Колокольня успешно удалена", "");
         }catch (Exception e){

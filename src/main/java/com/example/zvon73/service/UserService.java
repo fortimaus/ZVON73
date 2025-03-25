@@ -51,7 +51,7 @@ public class UserService {
     }
     @Transactional
     public User update(UserDto userDto){
-        User currentUser = findById(UUID.fromString(userDto.getId()));
+        User currentUser = getCurrentUser();
 
         if( !currentUser.getEmail().equals(userDto.getEmail()) )
             currentUser.setEmail(userDto.getEmail());

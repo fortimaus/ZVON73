@@ -51,12 +51,12 @@ public class BellController {
             return ResponseEntity.ok(bellService.delete(UUID.fromString(id)));
 
     }
-    @DeleteMapping("/preserve")
+    @PutMapping("/preserve")
     public ResponseEntity<MessageResponse> preserve(@RequestParam("id") String id){
         return ResponseEntity.ok(bellService.madeCanned(UUID.fromString(id)));
     }
 
-    @DeleteMapping("/recover")
+    @PutMapping("/recover")
     public ResponseEntity<MessageResponse> recover(@RequestParam("id") String id){
         return ResponseEntity.ok(bellService.recover(UUID.fromString(id)));
     }

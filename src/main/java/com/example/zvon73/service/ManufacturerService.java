@@ -27,6 +27,8 @@ public class ManufacturerService {
             throw new ValidateException("Некорректный адрес производителя");
         if (manufacturer.getPhone() == null || manufacturer.getPhone().isEmpty() || manufacturer.getPhone().length() != 12)
             throw new ValidateException("Некорректный телефон производителя");
+        if (manufacturer.getDescription() != null && (manufacturer.getDescription().length() < 10 || manufacturer.getDescription().length() > 500))
+            throw new ValidateException("Некорректное описание производителя");
     }
 
     @Transactional
@@ -36,6 +38,7 @@ public class ManufacturerService {
                 .title(manufacturerDto.getTitle())
                 .address(manufacturerDto.getAddress())
                 .phone(manufacturerDto.getPhone())
+                .description(manufacturerDto.getDescription())
                 .build();
         return manufacturerRepository.save(newManufacturer);
     }
@@ -63,6 +66,8 @@ public class ManufacturerService {
             currentManufacturer.setAddress(manufacturerDto.getAddress());
         if (!currentManufacturer.getPhone().equals(manufacturerDto.getPhone()))
             currentManufacturer.setPhone(manufacturerDto.getPhone());
+        if (manufacturerDto.getDescription() != null && !manufacturerDto.getDescription().equals(currentManufacturer.getDescription()))
+            currentManufacturer.setDescription(manufacturerDto.getDescription());
         return manufacturerRepository.save(currentManufacturer);
     }
 

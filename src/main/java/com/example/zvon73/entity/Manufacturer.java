@@ -2,10 +2,7 @@ package com.example.zvon73.entity;
 
 import java.util.UUID;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "manufacturers")
+@Entity
 public class Manufacturer {
     @Id
     @GeneratedValue
@@ -27,6 +24,9 @@ public class Manufacturer {
 
     @Column(nullable = false)
     private String address;
+
+    @Column(nullable = false)
+    private String description;
 
     @Column(nullable = false)
     private String phone;

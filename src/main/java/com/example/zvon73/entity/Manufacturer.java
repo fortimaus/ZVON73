@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Table(name = "manufacturers")
 public class Manufacturer {
     @Id
     @GeneratedValue

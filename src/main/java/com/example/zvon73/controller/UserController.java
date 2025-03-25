@@ -31,7 +31,7 @@ public class UserController {
         return ResponseEntity.ok(userService.updateRole(request));
     }
     @GetMapping
-    public ResponseEntity<UserDto> get(@RequestParam("id") String id){
-        return ResponseEntity.ok(new UserDto(userService.findById(UUID.fromString(id))));
+    public ResponseEntity<UserDto> get(){
+        return ResponseEntity.ok(new UserDto(userService.findById()));
     }
 }

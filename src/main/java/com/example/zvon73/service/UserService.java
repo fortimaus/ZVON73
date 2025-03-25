@@ -66,7 +66,7 @@ public class UserService {
     @Transactional
     public MessageResponse updateRole(RoleRequest request){
         try{
-            User updateUser = findById(UUID.fromString(request.getUser()));
+            User updateUser = getCurrentUser();
             Role newRole = Role.valueOf(request.getRole());
             if(updateUser.getRole() == Role.RINGER && (newRole != Role.RINGER || request.getTemples().isEmpty()) )
             {
@@ -129,9 +129,8 @@ public class UserService {
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
         return getByEmail(username);
     }
-    public User findById(UUID id){
-        return userRepository.findById(id)
-                .orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден"));
+    public User findById(){
+        return getCurrentUser();
     }
     public void deleteUser(User user){
         userRepository.delete(user);

@@ -42,6 +42,7 @@ public class BellService {
         Bell newBell = Bell.builder()
                 .title(bell.getTitle())
                 .weight(bell.getWeight())
+                .diameter(bell.getDiameter())
                 .manufacturer(manufacturer)
                 .image(bell.getImage())
                 .sound(bell.getSound())

@@ -89,58 +89,39 @@ public class BellService {
 
     @Transactional
     public MessageResponse madeCanned(UUID id){
-        try {
-            Bell currentBell = findById(id);
+        Bell currentBell = findById(id);
+        if(currentBell == null)
+            return new MessageResponse("", "Колокол не найден");
+        if(!checkUser(currentBell.getBellTower().getTemple()))
+            return new MessageResponse("", "403 : Not access");
+        currentBell.setCanned(true);
+        bellRepository.save(currentBell);
+        return new MessageResponse("Колокол успешно списан", "");
 
-            if(currentBell == null)
-                return new MessageResponse("", "Колокол не найден");
-
-            if(!checkUser(currentBell.getBellTower().getTemple()))
-                return new MessageResponse("", "403 : Not access");
-
-            currentBell.setCanned(true);
-            bellRepository.save(currentBell);
-            return new MessageResponse("Колокол успешно списан", "");
-        }catch (Exception e){
-            return new MessageResponse("", e.getMessage());
-        }
     }
 
     @Transactional
     public MessageResponse recover(UUID id){
-        try {
-            Bell currentBell = findById(id);
-
-            if(currentBell == null)
-                return new MessageResponse("", "Колокол не найден");
-
-            if(!checkUser(currentBell.getBellTower().getTemple()))
-                return new MessageResponse("", "403 : Not access");
-
-            currentBell.setCanned(false);
-            bellRepository.save(currentBell);
-            return new MessageResponse("Колокол успешно списан", "");
-        }catch (Exception e){
-            return new MessageResponse("", e.getMessage());
-        }
+        Bell currentBell = findById(id);
+        if(currentBell == null)
+            return new MessageResponse("", "Колокол не найден");
+        if(!checkUser(currentBell.getBellTower().getTemple()))
+            return new MessageResponse("", "403 : Not access");
+        currentBell.setCanned(false);
+        bellRepository.save(currentBell);
+        return new MessageResponse("Колокол успешно списан", "");
     }
 
     @Transactional
     public MessageResponse delete(UUID id){
-        try {
-            Bell currentBell = findById(id);
+        Bell currentBell = findById(id);
+        if(currentBell == null)
+            return new MessageResponse("", "Колокол не найден");
+        if(!checkUser(currentBell.getBellTower().getTemple()))
+            return new MessageResponse("", "403 : Not access");
+        bellRepository.delete(currentBell);
+        return new MessageResponse("Колокол успешно удалён", "");
 
-            if(currentBell == null)
-                return new MessageResponse("", "Колокол не найден");
-
-            if(!checkUser(currentBell.getBellTower().getTemple()))
-                return new MessageResponse("", "403 : Not access");
-
-            bellRepository.delete(currentBell);
-            return new MessageResponse("Колокол успешно удалён", "");
-        }catch (Exception e){
-            return new MessageResponse("", e.getMessage());
-        }
     }
 
     @Transactional(readOnly = true)

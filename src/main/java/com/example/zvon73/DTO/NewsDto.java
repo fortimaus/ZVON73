@@ -32,6 +32,6 @@ public class NewsDto {
         this.title = news.getTitle();
         this.text = news.getText();
         this.image = news.getImage();
-        this.date = news.getDate().toString();
+        this.date = news.getDate();
     }
 }

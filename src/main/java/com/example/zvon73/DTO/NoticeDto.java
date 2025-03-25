@@ -55,7 +55,7 @@ public class NoticeDto {
         this.image = notice.getImage();
         this.description = notice.getDescription();
         this.type = notice.getType().toString();
-        this.date = notice.getDate().toString();
+        this.date = notice.getDate();
         this.user = notice.getUser().getId().toString();
         this.temple = notice.getTemple().getId().toString();
         this.templeName = notice.getTemple().getTitle();

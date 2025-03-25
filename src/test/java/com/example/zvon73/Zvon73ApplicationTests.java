@@ -2,12 +2,14 @@ package com.example.zvon73;
 
 import com.example.zvon73.DTO.BellDto;
 import com.example.zvon73.DTO.BellTowerDto;
+import com.example.zvon73.DTO.NoticeDto;
 import com.example.zvon73.DTO.TempleDto;
 import com.example.zvon73.controller.domain.RoleRequest;
 import com.example.zvon73.entity.*;
 import com.example.zvon73.entity.Enums.BellStatus;
 import com.example.zvon73.entity.Enums.OrderStatus;
 import com.example.zvon73.entity.Enums.Role;
+import com.example.zvon73.entity.Enums.TypeNotice;
 import com.example.zvon73.repository.TempleRepository;
 import com.example.zvon73.service.*;
 import org.junit.jupiter.api.Assertions;
@@ -18,6 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -41,6 +44,8 @@ class ZvonTests {
 	@Autowired
 	private UserService userService;
 
+	@Autowired
+	private NoticeService noticeService;
 
     @Test
     void CreateNotice() throws IOException {
@@ -55,13 +60,21 @@ class ZvonTests {
                 .image(image)
                 .build();
 
+        TempleDto tD1 = templeService.create(t);
+        System.out.println(LocalDateTime.now());
 
-        //TempleDto tD1 = templeService.create(t);
-        System.out.println(new TempleDto(null));
+		NoticeDto ntD = NoticeDto.builder()
+				.title("test")
+				.manufacturer("testM")
+				.weight(11)
+				.diameter(11)
+				.image(image)
+				.description("TestD")
+				.type(TypeNotice.Take.toString())
+				.temple(tD1.getId())
+				.build();
 
-
-
-
+		noticeService.create(ntD);
     }
 
 

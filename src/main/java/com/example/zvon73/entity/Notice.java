@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.UUID;
 
@@ -45,16 +47,21 @@ public class Notice {
     @Column(name = "type", nullable = false)
     private TypeNotice type ;
 
-    @Temporal(TemporalType.DATE)
     @Column(name = "date")
-    private Date date ;
+    private LocalDateTime date ;
 
 
     @ManyToOne
-    @JoinColumn(name = "userId", nullable = false)
+    @JoinColumn(name = "userId", nullable = true)
     private User user ;
 
     @ManyToOne
     @JoinColumn(name = "templeId", nullable = false)
     private Temple temple ;
+
+    final static DateTimeFormatter CUSTOM_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+    public String getDate(){
+        return date.format(CUSTOM_FORMATTER);
+    }
 }

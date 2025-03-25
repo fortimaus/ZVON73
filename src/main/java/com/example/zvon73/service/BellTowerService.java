@@ -81,19 +81,14 @@ public class BellTowerService {
 
     @Transactional
     public MessageResponse delete(UUID id){
-        try {
-            BellTower currentBellTower = findById(id);
+        BellTower currentBellTower = findById(id);
+        if(currentBellTower == null)
+            return new MessageResponse("", "Колокольня не найден");
+        if(!checkUser(currentBellTower.getTemple()))
+            return new MessageResponse("", "Not Access");
+        bellTowerRepository.delete(currentBellTower);
+        return new MessageResponse("Колокольня успешно удалена", "");
 
-            if(currentBellTower == null)
-                return new MessageResponse("", "Колокольня не найден");
-            if(!checkUser(currentBellTower.getTemple()))
-                return new MessageResponse("", "Not Access");
-
-            bellTowerRepository.delete(currentBellTower);
-            return new MessageResponse("Колокольня успешно удалена", "");
-        }catch (Exception e){
-            return new MessageResponse("", e.getMessage());
-        }
     }
 
     @Transactional(readOnly = true)

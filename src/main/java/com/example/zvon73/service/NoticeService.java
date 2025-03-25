@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.webjars.NotFoundException;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -49,7 +50,7 @@ public class NoticeService {
                 .image(noticeDto.getImage())
                 .description(noticeDto.getDescription())
                 .type(TypeNotice.valueOf(noticeDto.getType()))
-                .date(new Date())
+                .date(LocalDateTime.now())
                 .user(curUser)
                 .temple(curTemple)
                 .build();
@@ -86,19 +87,15 @@ public class NoticeService {
     }
     @Transactional
     public MessageResponse delete(UUID id){
-        try {
-            Notice currentNotice = findById(id);
-            if(currentNotice == null)
-                return new MessageResponse("", "Заявка не найдена");
-            User currentUser = userService.getCurrentUser();
-            if(!currentUser.getId().equals(currentNotice.getUser().getId()) || !currentUser.getRole().equals(Role.ADMIN))
-                return new MessageResponse("", "Not Access");
+        Notice currentNotice = findById(id);
+        if(currentNotice == null)
+            return new MessageResponse("", "Заявка не найдена");
+        User currentUser = userService.getCurrentUser();
+        if(!currentUser.getId().equals(currentNotice.getUser().getId()) || !currentUser.getRole().equals(Role.ADMIN))
+            return new MessageResponse("", "Not Access");
+        noticeRepository.delete(currentNotice);
+        return new MessageResponse("Заявка успешно удалёна", "");
 
-            noticeRepository.delete(currentNotice);
-            return new MessageResponse("Заявка успешно удалёна", "");
-        }catch (Exception e){
-            return new MessageResponse("", e.getMessage());
-        }
     }
 
     @Transactional(readOnly = true)

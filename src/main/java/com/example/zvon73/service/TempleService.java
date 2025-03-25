@@ -84,18 +84,13 @@ public class TempleService {
 
     @Transactional
     public MessageResponse delete(UUID id){
-        try {
-            Temple currentTemple = findById(id);
-            if(currentTemple ==  null)
-                return new MessageResponse("", "Храм не найден");
-            if(!checkAdmin() || !checkRinger(currentTemple))
-                return new MessageResponse("", "Not Access");
-
-            templeRepository.delete(currentTemple);
-            return new MessageResponse("Храм успешно удален", "");
-        }catch (Exception e){
-            return new MessageResponse("", e.getMessage());
-        }
+        Temple currentTemple = findById(id);
+        if(currentTemple ==  null)
+            return new MessageResponse("", "Храм не найден");
+        if(!checkAdmin() || !checkRinger(currentTemple))
+            return new MessageResponse("", "Not Access");
+        templeRepository.delete(currentTemple);
+        return new MessageResponse("Храм успешно удален", "");
     }
 
     @Transactional(readOnly = true)

@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -38,7 +39,7 @@ public class NewsService {
                     .user(user)
                     .text(request.getText())
                     .image(request.getImage())
-                    .date(new Date())
+                    .date(LocalDateTime.now())
                     .build();
             newsRepository.save(record);
             return new MessageResponse("Новость сохранена", "");
@@ -48,16 +49,10 @@ public class NewsService {
     }
 
     public MessageResponse delete(NewsDto record){
-        try {
-            News news = getById(record.getId());
-            if(news == null)
-                return new MessageResponse("", "Новость не найден");
-
-            newsRepository.delete(news);
-            return new MessageResponse("Новость удалена", "");
-        }catch (Exception e){
-            return new MessageResponse("", e.getMessage());
-        }
-
+        News news = getById(record.getId());
+        if(news == null)
+            return new MessageResponse("", "Новость не найден");
+        newsRepository.delete(news);
+        return new MessageResponse("Новость удалена", "");
     }
 }

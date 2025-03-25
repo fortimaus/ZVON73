@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.UUID;
 
@@ -30,12 +32,17 @@ public class News {
     @Column(nullable = false, columnDefinition = "bytea")
     private byte[] image;
 
-    @Temporal(TemporalType.DATE)
     @Column(name = "date")
-    private Date date ;
+    private LocalDateTime date ;
 
     @ManyToOne
     @JoinColumn(name="user_id", nullable = false)
     private User user;
+
+    final static DateTimeFormatter CUSTOM_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+    public String getDate(){
+        return date.format(CUSTOM_FORMATTER);
+    }
 
 }

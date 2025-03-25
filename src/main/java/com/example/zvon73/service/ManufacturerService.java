@@ -78,20 +78,14 @@ public class ManufacturerService {
 
     @Transactional
     public MessageResponse delete(UUID id) {
-        try {
-            if(!checkUser())
-                return new MessageResponse("", "Not Access");
+        if(!checkUser())
+            return new MessageResponse("", "Not Access");
+        Manufacturer currentManufacturer = findById(id);
+        if(currentManufacturer == null)
+            return new MessageResponse("", "Производитель не найден");
+        manufacturerRepository.delete(currentManufacturer);
+        return new MessageResponse("Производитель успешно удален", "");
 
-            Manufacturer currentManufacturer = findById(id);
-
-            if(currentManufacturer == null)
-                return new MessageResponse("", "Производитель не найден");
-
-            manufacturerRepository.delete(currentManufacturer);
-            return new MessageResponse("Производитель успешно удален", "");
-        } catch (Exception e) {
-            return new MessageResponse("", e.getMessage());
-        }
     }
 
     @Transactional(readOnly = true)

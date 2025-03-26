@@ -53,7 +53,7 @@ public class UserService {
     public User update(UserDto userDto){
         User currentUser = getCurrentUser();
 
-        if (currentUser.getPhone().isEmpty() || !currentUser.getPhone().equals(userDto.getPhone()))
+        if (currentUser.getPhone() == null | !currentUser.getPhone().equals(userDto.getPhone()))
             currentUser.setPhone(userDto.getPhone());
 
         return userRepository.save(currentUser);

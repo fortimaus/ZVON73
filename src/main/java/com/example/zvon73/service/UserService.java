@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +32,6 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepository;
-
     private final TempleRepository templeRepository;
 
     public User save(User user) {
@@ -53,12 +53,8 @@ public class UserService {
     public User update(UserDto userDto){
         User currentUser = getCurrentUser();
 
-        if( !currentUser.getEmail().equals(userDto.getEmail()) )
-            currentUser.setEmail(userDto.getEmail());
-        if (!currentUser.getPhone().equals(userDto.getPhone()))
+        if (currentUser.getPhone().isEmpty() || !currentUser.getPhone().equals(userDto.getPhone()))
             currentUser.setPhone(userDto.getPhone());
-        if (!currentUser.getPassword().equals(userDto.getPassword()))
-            currentUser.setPassword(userDto.getPassword());
 
         return userRepository.save(currentUser);
     }

@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -13,8 +14,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "temples")
+@Entity(name = "temples")
 public class Temple {
 
     @Id
@@ -37,12 +37,46 @@ public class Temple {
     @Column(name = "image", columnDefinition = "bytea")
     private byte[] image ;
 
-    @OneToOne
-    @JoinColumn(name = "operatorId", nullable = true)
-    private User user ;
+    @ManyToMany
+    @JoinTable(
+            name = "ringers",
+            joinColumns = @JoinColumn(name = "temple_id"),
+            inverseJoinColumns = @JoinColumn(name = "ringer_id"))
+    List<User> ringers;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "temple")
     List<BellTower> BellTowers;
 
+    public void addRinger(User user){
+        if(ringers == null)
+            ringers = new ArrayList<>();
+        for(User ringer : ringers){
+           if(ringer.getId().equals(user.getId()))
+               return;
+        }
+        ringers.add(user);
+    }
+    public void deleteRinger(User user){
+        if(ringers == null)
+            return;
+        for(User ringer : ringers){
+            if(ringer.getId().equals(user.getId()))
+            {
+             ringers.remove(ringer);
+             return;
+            }
+        }
+    }
 
+    public boolean checkRinger(UUID id){
+        if(ringers == null)
+            return false;
+
+        for(User ringer : ringers)
+        {
+            if(ringer.getId().equals(id))
+                return true;
+        }
+        return false;
+    }
 }

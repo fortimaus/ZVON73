@@ -7,6 +7,8 @@ import com.example.zvon73.entity.User;
 import com.example.zvon73.entity.UserRecord;
 import com.example.zvon73.repository.UserRecordRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,8 +25,9 @@ public class UserRecordService {
     }
 
 
-    public List<UserRecordDto> getRecordsListByUserId(String id){
-        return userRecordRepository.getListByUserId(UUID.fromString(id)).stream().map(UserRecordDto::new).collect(Collectors.toList());
+    public List<UserRecordDto> getAllRecordsList(PageRequest request){
+        Page<UserRecord> userRecordsPage = userRecordRepository.findAll(request);
+        return userRecordsPage.getContent().stream().map(UserRecordDto::new).collect(Collectors.toList());
     }
 
     public MessageResponse create(UserRecordRequest request) {

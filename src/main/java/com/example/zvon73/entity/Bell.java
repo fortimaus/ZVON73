@@ -13,8 +13,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "bells")
+@Entity(name = "bells")
 public class Bell {
 
     @Id
@@ -25,11 +24,15 @@ public class Bell {
     @Column(name = "title", nullable = false)
     private String title ;
 
-    @Column(name = "manufacturer", nullable = false)
-    private String manufacturer ;
+    @ManyToOne
+    @JoinColumn(name = "manufacturerId", nullable = false)
+    private Manufacturer manufacturer ;
 
     @Column(name = "weight", nullable = false)
     private int weight;
+
+    @Column(name = "diameter", nullable = false)
+    private int diameter;
 
     @Column(name = "image", columnDefinition="bytea", nullable = false)
     private byte[] image ;
@@ -37,9 +40,8 @@ public class Bell {
     @Column(name = "sound", columnDefinition="bytea", nullable = false)
     private byte[] sound ;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status",nullable = false)
-    private BellStatus status ;
+    @Column(name = "canned", nullable = false)
+    private boolean canned = false;
 
     @ManyToOne
     @JoinColumn(name = "bell_towerId", nullable = false)

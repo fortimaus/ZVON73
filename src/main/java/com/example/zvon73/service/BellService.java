@@ -2,9 +2,9 @@ package com.example.zvon73.service;
 
 import com.example.zvon73.DTO.BellDto;
 import com.example.zvon73.controller.domain.MessageResponse;
-import com.example.zvon73.entity.Bell;
-import com.example.zvon73.entity.BellTower;
+import com.example.zvon73.entity.*;
 import com.example.zvon73.entity.Enums.BellStatus;
+import com.example.zvon73.entity.Enums.Role;
 import com.example.zvon73.repository.BellRepository;
 import com.example.zvon73.service.Exceptions.ValidateException;
 import lombok.RequiredArgsConstructor;
@@ -23,87 +23,111 @@ public class BellService {
 
     private final BellRepository bellRepository;
     private final BellTowerService bellTowerService;
-    @Transactional
-    public Bell create(BellDto bell)
-    {
-        validate(bell);
+    private final ManufacturerService manufacturerService;
+    private final UserService userService;
 
+    private boolean checkUser(Temple temple){
+        User currentUser = userService.getCurrentUser();
+        return temple.checkRinger(currentUser.getId()) || currentUser.getRole().equals(Role.ADMIN);
+    }
+
+    @Transactional
+    public BellDto create(BellDto bell)
+    {
         BellTower bellTower = bellTowerService.findById(UUID.fromString(bell.getBellTowerId()));
+        Manufacturer manufacturer = manufacturerService.findById(UUID.fromString(bell.getManufacturerId()));
+        if(!checkUser(bellTower.getTemple()))
+            return new BellDto();
 
         Bell newBell = Bell.builder()
                 .title(bell.getTitle())
                 .weight(bell.getWeight())
-                .manufacturer(bell.getManufacturer())
+                .diameter(bell.getDiameter())
+                .manufacturer(manufacturer)
                 .image(bell.getImage())
                 .sound(bell.getSound())
                 .bellTower(bellTower)
-                .status(BellStatus.Accepted)
                 .build();
-        return bellRepository.save(newBell);
+        return new BellDto(bellRepository.save(newBell));
     }
 
     @Transactional(readOnly = true)
     public Bell findById(UUID id){
-        return bellRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Колокола с данным id не найден"));
+        return bellRepository.findById(id).orElse(null);
     }
-    private void validate(BellDto bell){
-        if(bell.getTitle().isEmpty() || bell.getTitle().length() < 5 || bell.getTitle().length() >100)
-            throw new ValidateException("Некорректное название колокола");
-        if(bell.getWeight() < 0)
-            throw new ValidateException("Некорректной вес колокола");
-        if(bell.getManufacturer().isEmpty() || bell.getManufacturer().length() < 3 || bell.getManufacturer().length() > 100)
-            throw new ValidateException("Некорректное название производителя");
-        if(bell.getImage().length == 0)
-            throw new ValidateException("Некорректное изображение колокола");
-        if(bell.getSound().length == 0)
-            throw new ValidateException("Некорректный звук колокола");
-        if(bell.getBellTowerId().toString().isEmpty())
-            throw new ValidateException("Некорректный номер колокольни");
+
+
+    @Transactional
+    public BellDto update(BellDto newBell)
+    {
+        Bell currentBell = findById(UUID.fromString(newBell.getId()));
+
+        if(currentBell == null)
+            return new BellDto();
+
+        if(!checkUser(currentBell.getBellTower().getTemple()))
+            return new BellDto();
+
+        if( !currentBell.getTitle().equals(newBell.getTitle()) )
+            currentBell.setTitle(newBell.getTitle());
+
+        if( currentBell.getManufacturer().getId() != UUID.fromString(newBell.getManufacturerId()) ) {
+            Manufacturer manufacturer = manufacturerService.findById(UUID.fromString(newBell.getManufacturerId()));
+            currentBell.setManufacturer(manufacturer);
+        }
+
+        if( currentBell.getWeight() != (newBell.getWeight()) )
+            currentBell.setWeight(newBell.getWeight());
+
+        if( currentBell.getBellTower().getId() != (UUID.fromString(newBell.getBellTowerId()))) {
+            BellTower newBellTower = bellTowerService.findById(UUID.fromString(newBell.getBellTowerId()));
+            currentBell.setBellTower(newBellTower);
+            }
+
+
+        return new BellDto(bellRepository.save(currentBell));
     }
 
     @Transactional
-    public Bell update(BellDto newBell)
-    {
-        Bell currentBell = findById(UUID.fromString(newBell.getId()));
-        validate(newBell);
-            if( !currentBell.getTitle().equals(newBell.getTitle()) )
-                currentBell.setTitle(newBell.getTitle());
+    public MessageResponse madeCanned(UUID id){
+        Bell currentBell = findById(id);
+        if(currentBell == null)
+            return new MessageResponse("", "Колокол не найден");
+        if(!checkUser(currentBell.getBellTower().getTemple()))
+            return new MessageResponse("", "403 : Not access");
+        currentBell.setCanned(true);
+        bellRepository.save(currentBell);
+        return new MessageResponse("Колокол успешно списан", "");
 
-            if( !currentBell.getManufacturer().equals(newBell.getManufacturer()) )
-                currentBell.setManufacturer(newBell.getManufacturer());
+    }
 
-            if( currentBell.getWeight() != (newBell.getWeight()) )
-                currentBell.setWeight(newBell.getWeight());
-
-            if( currentBell.getBellTower().getId() != (UUID.fromString(newBell.getBellTowerId()))) {
-                BellTower newBellTower = bellTowerService.findById(UUID.fromString(newBell.getBellTowerId()));
-                currentBell.setBellTower(newBellTower);
-            }
-
-            if ( !Arrays.equals(currentBell.getSound(), newBell.getSound()) )
-                currentBell.setSound(newBell.getSound());
-
-            if( !Arrays.equals(currentBell.getImage(), newBell.getImage()) )
-                currentBell.setImage(newBell.getImage());
-
-        return bellRepository.save(currentBell);
+    @Transactional
+    public MessageResponse recover(UUID id){
+        Bell currentBell = findById(id);
+        if(currentBell == null)
+            return new MessageResponse("", "Колокол не найден");
+        if(!checkUser(currentBell.getBellTower().getTemple()))
+            return new MessageResponse("", "403 : Not access");
+        currentBell.setCanned(false);
+        bellRepository.save(currentBell);
+        return new MessageResponse("Колокол успешно списан", "");
     }
 
     @Transactional
     public MessageResponse delete(UUID id){
-        try {
-            Bell currentBell = findById(id);
-            bellRepository.delete(currentBell);
-            return new MessageResponse("Колокол успешно удалён", "");
-        }catch (Exception e){
-            return new MessageResponse("", e.getMessage());
-        }
+        Bell currentBell = findById(id);
+        if(currentBell == null)
+            return new MessageResponse("", "Колокол не найден");
+        if(!checkUser(currentBell.getBellTower().getTemple()))
+            return new MessageResponse("", "403 : Not access");
+        bellRepository.delete(currentBell);
+        return new MessageResponse("Колокол успешно удалён", "");
+
     }
 
     @Transactional(readOnly = true)
     public List<BellDto> findAll(){
-        return bellRepository.findAll().stream().map(BellDto::new).collect(Collectors.toList());
+        return bellRepository.findByCannedFalse().stream().map(BellDto::new).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -115,17 +139,5 @@ public class BellService {
         return bellRepository.findListByName('%'+name+'%').stream().map(BellDto::new).collect(Collectors.toList());
     }
 
-    @Transactional
-    public Bell updateStatusAccepted(UUID id){
-        Bell currentBell = findById(id);
-        currentBell.setStatus(BellStatus.Accepted);
-        return bellRepository.save(currentBell);
-    }
 
-    @Transactional
-    public Bell updateStatusInPath(UUID id){
-        Bell currentBell = findById(id);
-        currentBell.setStatus(BellStatus.In_path);
-        return bellRepository.save(currentBell);
-    }
 }

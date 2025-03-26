@@ -21,10 +21,13 @@ public class ManufacturerDto {
 
     private String phone ;
 
+    private String description;
+
     public ManufacturerDto (Manufacturer manufacturer){
        this.id = manufacturer.getId().toString();
        this.title = manufacturer.getTitle();
        this.address = manufacturer.getAddress();
        this.phone = manufacturer.getPhone();
+       this.description = manufacturer.getDescription();
     }
 }

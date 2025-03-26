@@ -23,6 +23,16 @@ public class ManufacturerService {
     private final ManufacturerRepository manufacturerRepository;
     private final UserService userService;
 
+    private void validate(ManufacturerDto manufacturer) {
+        if (manufacturer.getTitle() == null || manufacturer.getTitle().isEmpty() || manufacturer.getTitle().length() < 3 || manufacturer.getTitle().length() > 100)
+            throw new ValidateException("Некорректное название производителя");
+        if (manufacturer.getAddress() == null || manufacturer.getAddress().isEmpty() || manufacturer.getAddress().length() < 5 || manufacturer.getAddress().length() > 200)
+            throw new ValidateException("Некорректный адрес производителя");
+        if (manufacturer.getPhone() == null || manufacturer.getPhone().isEmpty() || manufacturer.getPhone().length() != 12)
+            throw new ValidateException("Некорректный телефон производителя");
+        if (manufacturer.getDescription() != null && (manufacturer.getDescription().length() < 10 || manufacturer.getDescription().length() > 500))
+            throw new ValidateException("Некорректное описание производителя");
+  
     private boolean checkUser()
     {
         User currentUser = userService.getCurrentUser();
@@ -39,6 +49,7 @@ public class ManufacturerService {
                 .title(manufacturerDto.getTitle())
                 .address(manufacturerDto.getAddress())
                 .phone(manufacturerDto.getPhone())
+                .description(manufacturerDto.getDescription())
                 .build();
         return new ManufacturerDto(manufacturerRepository.save(newManufacturer));
     }
@@ -73,7 +84,9 @@ public class ManufacturerService {
             currentManufacturer.setAddress(manufacturerDto.getAddress());
         if (!currentManufacturer.getPhone().equals(manufacturerDto.getPhone()))
             currentManufacturer.setPhone(manufacturerDto.getPhone());
-        return new ManufacturerDto(manufacturerRepository.save(currentManufacturer));
+        if (manufacturerDto.getDescription() != null && !manufacturerDto.getDescription().equals(currentManufacturer.getDescription()))
+            currentManufacturer.setDescription(manufacturerDto.getDescription());
+        return manufacturerRepository.save(currentManufacturer);
     }
 
     @Transactional

@@ -42,6 +42,7 @@ class ManufacturerServiceTest {
                 .title("тайтл")
                 .address("адресс")
                 .phone("123456789012")
+                .description("Это описание производителя.")
                 .build();
 
         manufacturer = Manufacturer.builder()
@@ -49,6 +50,7 @@ class ManufacturerServiceTest {
                 .title("тайтл")
                 .address("адресс")
                 .phone("123456789012")
+                .description("Это описание производителя.")
                 .build();
     }
 
@@ -163,5 +165,85 @@ class ManufacturerServiceTest {
         assertNotNull(manufacturers);
         assertEquals(1, manufacturers.size());
         assertEquals(manufacturer.getTitle(), manufacturers.get(0).getTitle());
+    }
+
+    @Test
+    void create_ValidDescription_Success() {
+        when(manufacturerRepository.save(any(Manufacturer.class))).thenReturn(manufacturer);
+
+        Manufacturer createdManufacturer = manufacturerService.create(validManufacturerDto);
+
+        assertNotNull(createdManufacturer);
+        assertEquals(validManufacturerDto.getDescription(), createdManufacturer.getDescription());
+        verify(manufacturerRepository, times(1)).save(any(Manufacturer.class));
+    }
+
+    @Test
+    void create_TooShortDescription_ThrowsValidateException() {
+        validManufacturerDto.setDescription("коротко");
+
+        assertThrows(ValidateException.class, () -> manufacturerService.create(validManufacturerDto));
+        verify(manufacturerRepository, never()).save(any());
+    }
+
+    @Test
+    void create_TooLongDescription_ThrowsValidateException() {
+        validManufacturerDto.setDescription("a".repeat(501));
+
+        assertThrows(ValidateException.class, () -> manufacturerService.create(validManufacturerDto));
+        verify(manufacturerRepository, never()).save(any());
+    }
+
+    @Test
+    void update_ValidDescription_Success() {
+        when(manufacturerRepository.findById(manufacturer.getId())).thenReturn(Optional.of(manufacturer));
+        when(manufacturerRepository.save(any(Manufacturer.class))).thenReturn(manufacturer);
+
+        validManufacturerDto.setDescription("Новое описание производителя.");
+        Manufacturer updatedManufacturer = manufacturerService.update(validManufacturerDto);
+
+        assertNotNull(updatedManufacturer);
+        assertEquals("Новое описание производителя.", updatedManufacturer.getDescription());
+        verify(manufacturerRepository, times(1)).save(any(Manufacturer.class));
+    }
+
+    @Test
+    void update_TooShortDescription_ThrowsValidateException() {
+        when(manufacturerRepository.findById(manufacturer.getId())).thenReturn(Optional.of(manufacturer));
+
+        validManufacturerDto.setDescription("коротко");
+
+        assertThrows(ValidateException.class, () -> manufacturerService.update(validManufacturerDto));
+        verify(manufacturerRepository, never()).save(any());
+    }
+
+    @Test
+    void update_TooLongDescription_ThrowsValidateException() {
+        when(manufacturerRepository.findById(manufacturer.getId())).thenReturn(Optional.of(manufacturer));
+
+        validManufacturerDto.setDescription("a".repeat(501));
+
+        assertThrows(ValidateException.class, () -> manufacturerService.update(validManufacturerDto));
+        verify(manufacturerRepository, never()).save(any());
+    }
+
+    @Test
+    void findAll_ReturnsManufacturersWithDescriptions() {
+        Manufacturer manufacturer2 = Manufacturer.builder()
+                .id(UUID.randomUUID())
+                .title("Manufacturer 2")
+                .address("Address 2")
+                .phone("987654321098")
+                .description("Описание второго производителя.")
+                .build();
+
+        when(manufacturerRepository.findAll()).thenReturn(Arrays.asList(manufacturer, manufacturer2));
+
+        List<ManufacturerDto> manufacturers = manufacturerService.findAll();
+
+        assertNotNull(manufacturers);
+        assertEquals(2, manufacturers.size());
+        assertEquals("Это описание производителя.", manufacturers.get(0).getDescription());
+        assertEquals("Описание второго производителя.", manufacturers.get(1).getDescription());
     }
 }

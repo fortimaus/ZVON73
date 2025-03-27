@@ -171,7 +171,7 @@ class ManufacturerServiceTest {
     void create_ValidDescription_Success() {
         when(manufacturerRepository.save(any(Manufacturer.class))).thenReturn(manufacturer);
 
-        Manufacturer createdManufacturer = manufacturerService.create(validManufacturerDto);
+        ManufacturerDto createdManufacturer = manufacturerService.create(validManufacturerDto);
 
         assertNotNull(createdManufacturer);
         assertEquals(validManufacturerDto.getDescription(), createdManufacturer.getDescription());
@@ -200,7 +200,7 @@ class ManufacturerServiceTest {
         when(manufacturerRepository.save(any(Manufacturer.class))).thenReturn(manufacturer);
 
         validManufacturerDto.setDescription("Новое описание производителя.");
-        Manufacturer updatedManufacturer = manufacturerService.update(validManufacturerDto);
+        ManufacturerDto updatedManufacturer = manufacturerService.update(validManufacturerDto);
 
         assertNotNull(updatedManufacturer);
         assertEquals("Новое описание производителя.", updatedManufacturer.getDescription());

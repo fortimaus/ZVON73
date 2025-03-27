@@ -38,6 +38,10 @@ public class User implements UserDetails {
 
     @Column(name = "phone", unique = true)
     private String phone;
+
+    @Column(name = "name")
+    private String name;
+
     @Column(unique = true)
     private String verificationToken;
     private LocalDateTime tokenExpiryDate;

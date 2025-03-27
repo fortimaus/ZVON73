@@ -45,6 +45,7 @@ public class AuthenticationService {
             var user = User.builder()
                     .email(request.getEmail())
                     .password(passwordEncoder.encode(request.getPassword()))
+                    .name(request.getName())
                     .role(Role.NOT_CONFIRMED)
                     .build();
             generateVerificationToken(user);

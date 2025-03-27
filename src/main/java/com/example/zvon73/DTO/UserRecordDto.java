@@ -13,11 +13,13 @@ import lombok.NoArgsConstructor;
 public class UserRecordDto {
     private String id;
     private String name;
+    private String authorName;
     private byte[] record;
 
     public UserRecordDto(UserRecord record){
         this.id = record.getId().toString();
         this.name = record.getName();
         this.record = record.getRecord();
+        this.authorName = record.getUser().getName();
     }
 }

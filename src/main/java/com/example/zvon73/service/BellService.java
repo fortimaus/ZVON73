@@ -24,20 +24,20 @@ public class BellService {
     private final BellRepository bellRepository;
     private final BellTowerService bellTowerService;
     private final ManufacturerService manufacturerService;
-    private final UserService userService;
-
-    private boolean checkUser(Temple temple){
-        User currentUser = userService.getCurrentUser();
-        return temple.checkRinger(currentUser.getId()) || currentUser.getRole().equals(Role.ADMIN);
-    }
+    private final CheckUserRole checkUser;
 
     @Transactional
     public BellDto create(BellDto bell)
     {
+
+
         BellTower bellTower = bellTowerService.findById(UUID.fromString(bell.getBellTowerId()));
-        Manufacturer manufacturer = manufacturerService.findById(UUID.fromString(bell.getManufacturerId()));
-        if(!checkUser(bellTower.getTemple()))
+
+        if(!checkUser.checkForAdminOrRingerTemple(bellTower.getTemple()))
             return new BellDto();
+
+        Manufacturer manufacturer = manufacturerService.findById(UUID.fromString(bell.getManufacturerId()));
+
 
         Bell newBell = Bell.builder()
                 .title(bell.getTitle())
@@ -65,7 +65,7 @@ public class BellService {
         if(currentBell == null)
             return new BellDto();
 
-        if(!checkUser(currentBell.getBellTower().getTemple()))
+        if(!checkUser.checkForAdminOrRingerTemple(currentBell.getBellTower().getTemple()))
             return new BellDto();
 
         if( !currentBell.getTitle().equals(newBell.getTitle()) )
@@ -84,7 +84,8 @@ public class BellService {
             currentBell.setBellTower(newBellTower);
             }
 
-
+        currentBell.setImage(newBell.getImage());
+        currentBell.setSound(newBell.getSound());
         return new BellDto(bellRepository.save(currentBell));
     }
 
@@ -93,7 +94,7 @@ public class BellService {
         Bell currentBell = findById(id);
         if(currentBell == null)
             return new MessageResponse("", "Колокол не найден");
-        if(!checkUser(currentBell.getBellTower().getTemple()))
+        if(!checkUser.checkForAdminOrRingerTemple(currentBell.getBellTower().getTemple()))
             return new MessageResponse("", "403 : Not access");
         currentBell.setCanned(true);
         bellRepository.save(currentBell);
@@ -106,7 +107,7 @@ public class BellService {
         Bell currentBell = findById(id);
         if(currentBell == null)
             return new MessageResponse("", "Колокол не найден");
-        if(!checkUser(currentBell.getBellTower().getTemple()))
+        if(!checkUser.checkForAdminOrRingerTemple(currentBell.getBellTower().getTemple()))
             return new MessageResponse("", "403 : Not access");
         currentBell.setCanned(false);
         bellRepository.save(currentBell);
@@ -118,7 +119,7 @@ public class BellService {
         Bell currentBell = findById(id);
         if(currentBell == null)
             return new MessageResponse("", "Колокол не найден");
-        if(!checkUser(currentBell.getBellTower().getTemple()))
+        if(!checkUser.checkForAdminOrRingerTemple(currentBell.getBellTower().getTemple()))
             return new MessageResponse("", "403 : Not access");
         bellRepository.delete(currentBell);
         return new MessageResponse("Колокол успешно удалён", "");
@@ -134,6 +135,7 @@ public class BellService {
     public List<BellDto> findByTemple(UUID uid){
         return bellRepository.findByTempleId(uid).stream().map(BellDto::new).collect(Collectors.toList());
     }
+
     @Transactional(readOnly = true)
     public List<BellDto> findByName(String name){
         return bellRepository.findListByName('%'+name+'%').stream().map(BellDto::new).collect(Collectors.toList());

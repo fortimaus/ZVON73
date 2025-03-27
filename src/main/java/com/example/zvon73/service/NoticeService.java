@@ -26,12 +26,9 @@ public class NoticeService {
     private final NoticeRepository noticeRepository;
     private final UserService userService;
     private final TempleService templeService;
+    private final CheckUserRole checkUserRole;
 
-    private boolean checkUser(Temple temple)
-    {
-        User currentUser = userService.getCurrentUser();
-        return (currentUser.getRole().equals(Role.RINGER) && temple.checkRinger(currentUser.getId())) || currentUser.getRole().equals(Role.ADMIN);
-    }
+
 
     @Transactional
     public NoticeDto create(NoticeDto noticeDto){
@@ -39,7 +36,7 @@ public class NoticeService {
         User curUser = userService.getCurrentUser();
         Temple curTemple = templeService.findById(UUID.fromString(noticeDto.getTemple()));
 
-        if(!checkUser(curTemple))
+        if(!checkUserRole.checkForAdminOrRingerTemple(curTemple))
             return new NoticeDto();
 
         Notice notice = Notice.builder()
@@ -72,7 +69,8 @@ public class NoticeService {
             return new NoticeDto();
         Temple curTemple = templeService.findById(UUID.fromString(noticeDto.getTemple()));
 
-        if(!checkUser(curTemple) || !checkUser(curNotice.getTemple()))
+        if(!checkUserRole.checkForAdminOrRingerTemple(curTemple) &&
+                !checkUserRole.checkForAdminOrRingerTemple(curNotice.getTemple()))
             return new NoticeDto();
 
         curNotice.setTitle(noticeDto.getTitle());

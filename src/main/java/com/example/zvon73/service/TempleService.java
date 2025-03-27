@@ -26,21 +26,13 @@ public class TempleService {
 
     private final TempleRepository templeRepository;
     private final UserService userService;
-
-    private boolean checkAdmin(){
-        User currentUser = userService.getCurrentUser();
-        return currentUser.getRole().equals(Role.ADMIN);
-    }
-    private boolean checkRinger(Temple temple){
-        User currentUser = userService.getCurrentUser();
-        return temple.checkRinger(currentUser.getId());
-    }
+    private final CheckUserRole checkUserRole;
 
 
     @Transactional
     public TempleDto create(TempleDto temple)
     {
-        if(!checkAdmin())
+        if(!checkUserRole.checkForAdmin())
             return new TempleDto();
         Temple newTemple = Temple.builder()
                 .title(temple.getTitle())
@@ -66,7 +58,7 @@ public class TempleService {
 
         if(currentTemple ==  null)
             return new TempleDto();
-        if(!checkAdmin() || !checkRinger(currentTemple))
+        if(!checkUserRole.checkForAdminOrRingerTemple(currentTemple))
             return new TempleDto();
 
         if( !currentTemple.getAddress().equals(newTemple.getAddress()) )
@@ -78,6 +70,7 @@ public class TempleService {
         if( !currentTemple.getDescription().equals(newTemple.getDescription()) )
             currentTemple.setDescription(newTemple.getDescription());
 
+        currentTemple.setImage(newTemple.getImage());
 
         return new TempleDto(templeRepository.save(currentTemple));
     }
@@ -87,7 +80,7 @@ public class TempleService {
         Temple currentTemple = findById(id);
         if(currentTemple ==  null)
             return new MessageResponse("", "Храм не найден");
-        if(!checkAdmin() || !checkRinger(currentTemple))
+        if(!checkUserRole.checkForAdminOrRingerTemple(currentTemple))
             return new MessageResponse("", "Not Access");
         templeRepository.delete(currentTemple);
         return new MessageResponse("Храм успешно удален", "");

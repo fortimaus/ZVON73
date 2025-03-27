@@ -2,6 +2,7 @@ package com.example.zvon73.service;
 
 import com.example.zvon73.DTO.NewsDto;
 import com.example.zvon73.controller.domain.MessageResponse;
+import com.example.zvon73.entity.Enums.Role;
 import com.example.zvon73.entity.News;
 import com.example.zvon73.repository.NewsRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 public class NewsService {
     private final UserService userService;
     private final NewsRepository newsRepository;
+    private final CheckUserRole checkUserRole;
 
     public List<NewsDto> getAllNewsList(PageRequest request){
         Page<News> newsPage = newsRepository.findAll(request);
@@ -34,6 +36,8 @@ public class NewsService {
     public MessageResponse create(NewsDto request) {
         try {
             var user = userService.getCurrentUser();
+            if (!checkUserRole.checkForAdminOrRinger())
+                new MessageResponse("", "403: Not Access");
             var record = News.builder()
                     .title(request.getTitle())
                     .user(user)
@@ -52,6 +56,8 @@ public class NewsService {
         News news = getById(record.getId());
         if(news == null)
             return new MessageResponse("", "Новость не найден");
+        if (!checkUserRole.checkForAdminOrRinger())
+            new MessageResponse("", "403: Not Access");
         newsRepository.delete(news);
         return new MessageResponse("Новость удалена", "");
     }

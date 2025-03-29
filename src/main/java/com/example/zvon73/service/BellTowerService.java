@@ -80,6 +80,8 @@ public class BellTowerService {
         BellTower currentBellTower = findById(id);
         if(currentBellTower == null)
             return new MessageResponse("", "Колокольня не найден");
+        if(!currentBellTower.getBells().isEmpty())
+            return new MessageResponse("", "В данной колокольне есть колокола. Удалите или переместите их в другую колокольню");
         if(!checkUser.checkForAdminOrRingerTemple(currentBellTower.getTemple()))
             return new MessageResponse("", "Not Access");
         bellTowerRepository.delete(currentBellTower);

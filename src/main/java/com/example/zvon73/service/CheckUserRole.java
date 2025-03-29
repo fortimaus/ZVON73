@@ -4,9 +4,10 @@ import com.example.zvon73.entity.Enums.Role;
 import com.example.zvon73.entity.Temple;
 import com.example.zvon73.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
-
+@Component
 public class CheckUserRole {
 
     private final UserService userService;
@@ -16,13 +17,5 @@ public class CheckUserRole {
         return temple.checkRinger(user.getId()) || user.getRole().equals(Role.ADMIN);
     }
 
-    public boolean checkForAdminOrRinger(){
-        User user = userService.getCurrentUser();
-        return user.getRole().equals(Role.ADMIN) || user.getRole().equals(Role.RINGER);
-    }
 
-    public boolean checkForAdmin(){
-        User user = userService.getCurrentUser();
-        return user.getRole().equals(Role.ADMIN);
-    }
 }

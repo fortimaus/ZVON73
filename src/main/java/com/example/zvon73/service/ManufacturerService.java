@@ -28,8 +28,6 @@ public class ManufacturerService {
     @Transactional
     public ManufacturerDto create(ManufacturerDto manufacturerDto) {
 
-        if(!checkUser.checkForAdmin())
-            return new ManufacturerDto();
 
         Manufacturer newManufacturer = Manufacturer.builder()
                 .title(manufacturerDto.getTitle())
@@ -56,8 +54,6 @@ public class ManufacturerService {
     @Transactional
     public ManufacturerDto update(ManufacturerDto manufacturerDto) {
 
-        if(!checkUser.checkForAdmin())
-            return new ManufacturerDto();
 
         Manufacturer currentManufacturer = findById(UUID.fromString(manufacturerDto.getId()));
 
@@ -77,8 +73,6 @@ public class ManufacturerService {
 
     @Transactional
     public MessageResponse delete(UUID id) {
-        if(!checkUser.checkForAdmin())
-            return new MessageResponse("", "Not Access");
         Manufacturer currentManufacturer = findById(id);
         if(currentManufacturer == null)
             return new MessageResponse("", "Производитель не найден");

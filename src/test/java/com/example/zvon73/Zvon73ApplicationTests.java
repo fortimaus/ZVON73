@@ -75,6 +75,7 @@ class ZvonTests {
 				.build();
 
 		noticeService.create(ntD);
+		System.out.println(templeService.delete(UUID.fromString(tD1.getId())));
     }
 
 

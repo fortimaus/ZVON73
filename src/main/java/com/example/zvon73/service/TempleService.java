@@ -32,8 +32,6 @@ public class TempleService {
     @Transactional
     public TempleDto create(TempleDto temple)
     {
-        if(!checkUserRole.checkForAdmin())
-            return new TempleDto();
         Temple newTemple = Temple.builder()
                 .title(temple.getTitle())
                 .address(temple.getAddress())
@@ -80,6 +78,8 @@ public class TempleService {
         Temple currentTemple = findById(id);
         if(currentTemple ==  null)
             return new MessageResponse("", "Храм не найден");
+        if(!currentTemple.getBellTowers().isEmpty())
+            return new MessageResponse("", "В данном храме есть колокольни.");
         if(!checkUserRole.checkForAdminOrRingerTemple(currentTemple))
             return new MessageResponse("", "Not Access");
         templeRepository.delete(currentTemple);
@@ -102,11 +102,6 @@ public class TempleService {
 
     }
 
-    @Transactional(readOnly = true)
-    public List<TempleDto> findByUser(User user){
-        return templeRepository.findTemplesByRingersId(user.getId()).stream().map(TempleDto::new).collect(Collectors.toList());
-
-  }
 
 
 }

@@ -47,6 +47,9 @@ public class Temple {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "temple")
     List<BellTower> BellTowers;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "temple", cascade = CascadeType.REMOVE)
+    List<Notice> notices;
+
     public void addRinger(User user){
         if(ringers == null)
             ringers = new ArrayList<>();

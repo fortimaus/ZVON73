@@ -55,7 +55,8 @@ public class UserService {
 
         if (currentUser.getPhone() == null || !currentUser.getPhone().equals(userDto.getPhone()))
             currentUser.setPhone(userDto.getPhone());
-
+        if (currentUser.getName() == null || !currentUser.getName().equals(userDto.getName()))
+            currentUser.setName(userDto.getName());
         return userRepository.save(currentUser);
     }
 

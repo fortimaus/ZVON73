@@ -21,20 +21,13 @@ import java.util.stream.Collectors;
 public class ManufacturerService {
 
     private final ManufacturerRepository manufacturerRepository;
-    private final UserService userService;
+    private final CheckUserRole checkUser;
 
-  
-    private boolean checkUser()
-    {
-        User currentUser = userService.getCurrentUser();
-        return currentUser.getRole().equals(Role.ADMIN);
-    }
+
 
     @Transactional
     public ManufacturerDto create(ManufacturerDto manufacturerDto) {
 
-        if(!checkUser())
-            return new ManufacturerDto();
 
         Manufacturer newManufacturer = Manufacturer.builder()
                 .title(manufacturerDto.getTitle())
@@ -61,8 +54,6 @@ public class ManufacturerService {
     @Transactional
     public ManufacturerDto update(ManufacturerDto manufacturerDto) {
 
-        if(!checkUser())
-            return new ManufacturerDto();
 
         Manufacturer currentManufacturer = findById(UUID.fromString(manufacturerDto.getId()));
 
@@ -82,8 +73,6 @@ public class ManufacturerService {
 
     @Transactional
     public MessageResponse delete(UUID id) {
-        if(!checkUser())
-            return new MessageResponse("", "Not Access");
         Manufacturer currentManufacturer = findById(id);
         if(currentManufacturer == null)
             return new MessageResponse("", "Производитель не найден");

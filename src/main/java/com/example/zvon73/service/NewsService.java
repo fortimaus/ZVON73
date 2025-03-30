@@ -2,6 +2,7 @@ package com.example.zvon73.service;
 
 import com.example.zvon73.DTO.NewsDto;
 import com.example.zvon73.controller.domain.MessageResponse;
+import com.example.zvon73.entity.Enums.Role;
 import com.example.zvon73.entity.News;
 import com.example.zvon73.repository.NewsRepository;
 import lombok.RequiredArgsConstructor;

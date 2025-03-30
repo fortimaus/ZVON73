@@ -27,12 +27,8 @@ public class BellTowerService {
 
     private final BellTowerRepository bellTowerRepository;
     private final TempleService templeService;
-    private final UserService userService;
+    private final CheckUserRole checkUser;
 
-    private boolean checkUser(Temple temple){
-        User currentUser = userService.getCurrentUser();
-        return temple.checkRinger(currentUser.getId()) || currentUser.getRole().equals(Role.ADMIN);
-    }
 
     @Transactional
     public BellTowerDto create(BellTowerDto bellTower)
@@ -40,7 +36,7 @@ public class BellTowerService {
 
         Temple temple = templeService.findById(UUID.fromString(bellTower.getTempleId()));
 
-        if(!checkUser(temple))
+        if(!checkUser.checkForAdminOrRingerTemple(temple))
             return new BellTowerDto();
 
         BellTower newBellTower = BellTower.builder()
@@ -65,7 +61,7 @@ public class BellTowerService {
         if(currentBellTower == null)
             return new BellTowerDto();
 
-        if(!checkUser(currentBellTower.getTemple()))
+        if(!checkUser.checkForAdminOrRingerTemple(currentBellTower.getTemple()))
             return new BellTowerDto();
 
         if( !currentBellTower.getTitle().equals(newBellTower.getTitle()) )
@@ -84,7 +80,9 @@ public class BellTowerService {
         BellTower currentBellTower = findById(id);
         if(currentBellTower == null)
             return new MessageResponse("", "Колокольня не найден");
-        if(!checkUser(currentBellTower.getTemple()))
+        if(!currentBellTower.getBells().isEmpty())
+            return new MessageResponse("", "В данной колокольне есть колокола. Удалите или переместите их в другую колокольню");
+        if(!checkUser.checkForAdminOrRingerTemple(currentBellTower.getTemple()))
             return new MessageResponse("", "Not Access");
         bellTowerRepository.delete(currentBellTower);
         return new MessageResponse("Колокольня успешно удалена", "");

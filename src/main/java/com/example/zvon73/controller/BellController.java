@@ -33,6 +33,7 @@ public class BellController {
     @GetMapping("/list/temple")
     public ResponseEntity<List<BellDto>> getFullListByTemple(@RequestParam("id") String id){
         return ResponseEntity.ok(bellService.findByTemple(UUID.fromString(id)));
+
     }
     @GetMapping("/search/list")
     public ResponseEntity<List<BellDto>> getFullListByName(@RequestParam("name") String name){

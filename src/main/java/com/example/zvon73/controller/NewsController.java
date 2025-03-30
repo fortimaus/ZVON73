@@ -39,7 +39,7 @@ public class NewsController {
         return ResponseEntity.ok(newsService.create(request));
     }
     @DeleteMapping("/delete")
-    public ResponseEntity<MessageResponse> deleteNews(@RequestBody NewsDto request){
-        return ResponseEntity.ok(newsService.delete(request));
+    public ResponseEntity<MessageResponse> deleteNews(@RequestParam("id") String id){
+        return ResponseEntity.ok(newsService.delete(id));
     }
 }

@@ -48,8 +48,8 @@ public class NewsService {
         }
     }
 
-    public MessageResponse delete(NewsDto record){
-        News news = getById(record.getId());
+    public MessageResponse delete(String id){
+        News news = getById(id);
         if(news == null)
             return new MessageResponse("", "Новость не найден");
         newsRepository.delete(news);

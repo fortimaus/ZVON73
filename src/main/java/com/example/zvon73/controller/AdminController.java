@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@RestController("/api/admin")
+@RestController
+@RequestMapping("/api/admin")
+@SecurityRequirement(name = SECURITY_CONFIG_NAME)
 @RequiredArgsConstructor
 public class AdminController {
     private final UserService userService;

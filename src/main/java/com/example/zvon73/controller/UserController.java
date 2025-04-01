@@ -32,6 +32,6 @@ public class UserController {
     }
     @GetMapping
     public ResponseEntity<UserDto> get(){
-        return ResponseEntity.ok(new UserDto(userService.findById()));
+        return ResponseEntity.ok(new UserDto(userService.getCurrentUser()));
     }
 }

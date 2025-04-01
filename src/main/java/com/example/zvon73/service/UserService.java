@@ -63,7 +63,9 @@ public class UserService {
     @Transactional
     public MessageResponse updateRole(RoleRequest request){
         try{
-            User updateUser = getCurrentUser();
+            User updateUser = findById(request.getUser());
+            if (updateUser == null)
+                return new MessageResponse("Пользователь не найден", "");
             Role newRole = Role.valueOf(request.getRole());
             if(updateUser.getRole() == Role.RINGER && (newRole != Role.RINGER || request.getTemples().isEmpty()) )
             {
@@ -126,8 +128,8 @@ public class UserService {
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
         return getByEmail(username);
     }
-    public User findById(){
-        return getCurrentUser();
+    public User findById(String uuid){
+        return userRepository.findById(UUID.fromString(uuid)).orElse(null);
     }
     public void deleteUser(User user){
         userRepository.delete(user);

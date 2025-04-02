@@ -36,6 +36,7 @@ public class UserDto {
         this.role = user.getRole().toString();
         this.email = user.getEmail();
         this.password = user.getPassword();
+        this.name = user.getName();
         this.phone = user.getPhone();
     }
 

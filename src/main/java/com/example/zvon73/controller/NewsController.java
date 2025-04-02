@@ -34,12 +34,5 @@ public class NewsController {
     public ResponseEntity<NewsDto> get(@RequestParam("id") String id){
         return ResponseEntity.ok(new NewsDto(newsService.getById(id)));
     }
-    @PostMapping("/create")
-    public ResponseEntity<MessageResponse> createNews(@RequestBody NewsDto request){
-        return ResponseEntity.ok(newsService.create(request));
-    }
-    @DeleteMapping("/delete")
-    public ResponseEntity<MessageResponse> deleteNews(@RequestParam("id") String id){
-        return ResponseEntity.ok(newsService.delete(id));
-    }
+
 }

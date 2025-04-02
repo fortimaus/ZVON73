@@ -53,6 +53,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/admin/**").hasAuthority(Role.ADMIN.toString())
+                        .requestMatchers("/api/ringer/**").hasAnyAuthority(Role.ADMIN.toString(), Role.RINGER.toString())
+                        .requestMatchers("/api/notice/**").hasAnyAuthority(Role.ADMIN.toString(), Role.RINGER.toString())
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/webjars/**", "/swagger-resources/**").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))

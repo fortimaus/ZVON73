@@ -38,17 +38,4 @@ public class BellTowerController {
     public ResponseEntity<List<BellTowerDto>> getFullListByName(@RequestParam("name") String name){
         return ResponseEntity.ok(bellTowerService.findAllByName(name));
     }
-    @PostMapping("/create")
-    public ResponseEntity<BellTowerDto> create(@RequestBody BellTowerDto bellTowerDto){
-        return ResponseEntity.ok(bellTowerService.create(bellTowerDto));
-
-    }
-    @PutMapping("/edit")
-    public ResponseEntity<BellTowerDto> edit(@RequestBody BellTowerDto bellTowerDto){
-        return ResponseEntity.ok(bellTowerService.update(bellTowerDto));
-    }
-    @DeleteMapping("/delete")
-    public ResponseEntity<MessageResponse> delete(@RequestParam("id") String id){
-        return ResponseEntity.ok(bellTowerService.delete(UUID.fromString(id)));
-    }
 }

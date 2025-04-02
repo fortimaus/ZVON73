@@ -30,25 +30,9 @@ public class TempleController {
     public ResponseEntity<List<TempleDto>> getSearchListByName(@RequestParam("name") String name){
         return ResponseEntity.ok(templeService.findListByName(name));
     }
-    @GetMapping("/operator")
-    public ResponseEntity<List<TempleDto>> getTempleByUser(){
-        return ResponseEntity.ok(templeService.findByUser());
-    }
     @GetMapping
     public ResponseEntity<TempleDto> get(@RequestParam("id") String id){
         return ResponseEntity.ok(new TempleDto(templeService.findById(UUID.fromString(id))));
     }
-    @PostMapping("/create")
-    public ResponseEntity<TempleDto> createTemple(@RequestBody TempleDto templeDto){
-        return ResponseEntity.ok(templeService.create(templeDto));
-    }
 
-    @PutMapping("/edit")
-    public ResponseEntity<TempleDto> editTemple(@RequestBody TempleDto templeDto){
-        return ResponseEntity.ok(templeService.update(templeDto));
-    }
-    @DeleteMapping("/delete")
-    public ResponseEntity<MessageResponse> deleteTemple(@RequestParam("id") String id){
-        return ResponseEntity.ok(templeService.delete(UUID.fromString(id)));
-    }
 }

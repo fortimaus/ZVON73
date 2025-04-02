@@ -39,26 +39,4 @@ public class BellController {
     public ResponseEntity<List<BellDto>> getFullListByName(@RequestParam("name") String name){
         return ResponseEntity.ok(bellService.findByName(name));
     }
-    @PostMapping("/create")
-    public ResponseEntity<BellDto> create(@RequestBody BellDto bellDto){
-        return ResponseEntity.ok((bellService.create(bellDto)));
-    }
-    @PutMapping("/edit")
-    public ResponseEntity<BellDto> edit(@RequestBody BellDto bellDto){
-        return ResponseEntity.ok(bellService.update(bellDto));
-    }
-    @DeleteMapping("/delete")
-    public ResponseEntity<MessageResponse> delete(@RequestParam("id") String id){
-            return ResponseEntity.ok(bellService.delete(UUID.fromString(id)));
-
-    }
-    @PutMapping("/preserve")
-    public ResponseEntity<MessageResponse> preserve(@RequestParam("id") String id){
-        return ResponseEntity.ok(bellService.madeCanned(UUID.fromString(id)));
-    }
-
-    @PutMapping("/recover")
-    public ResponseEntity<MessageResponse> recover(@RequestParam("id") String id){
-        return ResponseEntity.ok(bellService.recover(UUID.fromString(id)));
-    }
 }

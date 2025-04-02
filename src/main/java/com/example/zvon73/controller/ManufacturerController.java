@@ -46,19 +46,4 @@ public class ManufacturerController {
         return ResponseEntity.ok(new ManufacturerDto(manufacturerService.findById(UUID.fromString(id))));
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<ManufacturerDto> createManufacturer(@RequestBody ManufacturerDto manufacturerDto) {
-        return ResponseEntity.ok(manufacturerService.create(manufacturerDto));
-
-    }
-
-    @PutMapping("/edit")
-    public ResponseEntity<ManufacturerDto> editManufacturer(@RequestBody ManufacturerDto manufacturerDto) {
-        return ResponseEntity.ok(manufacturerService.update(manufacturerDto));
-    }
-
-    @DeleteMapping("/delete")
-    public ResponseEntity<MessageResponse> deleteManufacturer(@RequestParam("id") String id) {
-        return ResponseEntity.ok(manufacturerService.delete(UUID.fromString(id)));
-    }
 }

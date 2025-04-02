@@ -1,6 +1,7 @@
 package com.example.zvon73.service;
 
 import com.example.zvon73.DTO.TempleDto;
+import com.example.zvon73.DTO.UserTemplesDto;
 import com.example.zvon73.controller.domain.MessageResponse;
 import com.example.zvon73.controller.domain.TempleOperatorRequest;
 import com.example.zvon73.entity.Bell;
@@ -99,6 +100,12 @@ public class TempleService {
     public List<TempleDto> findByUser(){
         User currentUser = userService.getCurrentUser();
         return templeRepository.findTemplesByRingersId(currentUser.getId()).stream().map(TempleDto::new).collect(Collectors.toList());
+
+    }
+    @Transactional(readOnly = true)
+    public List<UserTemplesDto> findByUserId(String id){
+        User currentUser = userService.findById(id);
+        return templeRepository.findTemplesByRingersId(currentUser.getId()).stream().map(UserTemplesDto::new).collect(Collectors.toList());
 
     }
 

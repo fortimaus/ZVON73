@@ -80,8 +80,8 @@ public class TempleService {
             return new MessageResponse("", "Храм не найден");
         if(!currentTemple.getBellTowers().isEmpty())
             return new MessageResponse("", "В данном храме есть колокольни.");
-        if(!checkUserRole.checkForAdminOrRingerTemple(currentTemple))
-            return new MessageResponse("", "Not Access");
+        if(!checkUserRole.checkForAdmin())
+            return new MessageResponse("", "Не права доступа");
         templeRepository.delete(currentTemple);
         return new MessageResponse("Храм успешно удален", "");
     }

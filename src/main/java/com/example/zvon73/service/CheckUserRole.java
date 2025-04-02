@@ -16,6 +16,10 @@ public class CheckUserRole {
         User user = userService.getCurrentUser();
         return temple.checkRinger(user.getId()) || user.getRole().equals(Role.ADMIN);
     }
+    public boolean checkForAdmin(){
+        User user = userService.getCurrentUser();
+        return user.getRole().equals(Role.ADMIN);
+    }
 
 
 }

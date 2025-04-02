@@ -31,14 +31,6 @@ public class TempleController {
     public ResponseEntity<List<TempleDto>> getSearchListByName(@RequestParam("name") String name){
         return ResponseEntity.ok(templeService.findListByName(name));
     }
-    @GetMapping("/operator")
-    public ResponseEntity<List<TempleDto>> getTempleByUser(){
-        return ResponseEntity.ok(templeService.findByUser());
-    }
-    @GetMapping("/list_operator")
-    public ResponseEntity<List<UserTemplesDto>> getTempleIdsByUser(@RequestParam("id") String id){
-        return ResponseEntity.ok(templeService.findByUserId(id));
-    }
     @GetMapping
     public ResponseEntity<TempleDto> get(@RequestParam("id") String id){
         return ResponseEntity.ok(new TempleDto(templeService.findById(UUID.fromString(id))));

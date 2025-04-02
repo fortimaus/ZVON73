@@ -1,9 +1,6 @@
 package com.example.zvon73.controller;
 
-import com.example.zvon73.DTO.BellDto;
-import com.example.zvon73.DTO.BellTowerDto;
-import com.example.zvon73.DTO.NewsDto;
-import com.example.zvon73.DTO.TempleDto;
+import com.example.zvon73.DTO.*;
 import com.example.zvon73.controller.domain.MessageResponse;
 import com.example.zvon73.service.BellService;
 import com.example.zvon73.service.BellTowerService;
@@ -72,7 +69,10 @@ public class RingerController {
     public ResponseEntity<List<TempleDto>> getTempleByUser(){
         return ResponseEntity.ok(templeService.findByUser());
     }
-
+    @GetMapping("/temple/list_operator")
+    public ResponseEntity<List<UserTemplesDto>> getTempleIdsByUser(@RequestParam("id") String id){
+        return ResponseEntity.ok(templeService.findByUserId(id));
+    }
     @PostMapping("/news/create")
     public ResponseEntity<MessageResponse> createNews(@RequestBody NewsDto request){
         return ResponseEntity.ok(newsService.create(request));

@@ -2,6 +2,7 @@ package com.example.zvon73.controller;
 
 import com.example.zvon73.DTO.NoticeDto;
 import com.example.zvon73.DTO.TempleDto;
+import com.example.zvon73.DTO.UserTemplesDto;
 import com.example.zvon73.controller.domain.MessageResponse;
 import com.example.zvon73.controller.domain.TempleOperatorRequest;
 import com.example.zvon73.service.TempleService;
@@ -29,6 +30,14 @@ public class TempleController {
     @GetMapping("/search-list")
     public ResponseEntity<List<TempleDto>> getSearchListByName(@RequestParam("name") String name){
         return ResponseEntity.ok(templeService.findListByName(name));
+    }
+    @GetMapping("/operator")
+    public ResponseEntity<List<TempleDto>> getTempleByUser(){
+        return ResponseEntity.ok(templeService.findByUser());
+    }
+    @GetMapping("/list_operator")
+    public ResponseEntity<List<UserTemplesDto>> getTempleIdsByUser(@RequestParam("id") String id){
+        return ResponseEntity.ok(templeService.findByUserId(id));
     }
     @GetMapping
     public ResponseEntity<TempleDto> get(@RequestParam("id") String id){

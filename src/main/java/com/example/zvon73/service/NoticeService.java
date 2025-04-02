@@ -89,7 +89,7 @@ public class NoticeService {
         if(currentNotice == null)
             return new MessageResponse("", "Заявка не найдена");
         User currentUser = userService.getCurrentUser();
-        if(!currentUser.getId().equals(currentNotice.getUser().getId()) || !currentUser.getRole().equals(Role.ADMIN))
+        if(!currentUser.getId().equals(currentNotice.getUser().getId()))
             return new MessageResponse("", "Not Access");
         noticeRepository.delete(currentNotice);
         return new MessageResponse("Заявка успешно удалёна", "");
